@@ -2,7 +2,10 @@ package com.employees.demo.services.impl;
 
 
 import com.employees.demo.dao.EmployeeDao;
-import com.employees.demo.dao.repositories.*;
+import com.employees.demo.dao.repositories.DeptEmpRepository;
+import com.employees.demo.dao.repositories.EmployeeRepository;
+import com.employees.demo.dao.repositories.SalaryRepository;
+import com.employees.demo.dao.repositories.TitleRepository;
 import com.employees.demo.dtos.EmployeeDto;
 import com.employees.demo.dtos.EmployeeListItemDto;
 import com.employees.demo.dtos.PaginationDto;
@@ -14,6 +17,7 @@ import com.employees.demo.entities.Title;
 import com.employees.demo.entities.pk.EmpDeptsPk;
 import com.employees.demo.entities.pk.SalaryPk;
 import com.employees.demo.entities.pk.TitlePk;
+import com.employees.demo.services.EmployeeNotFoundException;
 import com.employees.demo.utils.Gender;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +27,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -124,21 +127,20 @@ public class EmployeeServiceImplTest {
         when(this.deptEmp.getToDate()).thenReturn(END_VALID_DATE);
         when((this.empDeptsPk.getDepartmentNumber())).thenReturn(DEPARTMENT_2);
 
-        Set<DeptEmp> deptEmpsSet=new HashSet<>(List.of(deptEmp));
+        Set<DeptEmp> deptEmpsSet=Set.of(deptEmp);
         when(employee.getDepartments()).thenReturn(deptEmpsSet);
-
         when(this.titlePk.getEmployeeNumber()).thenReturn(EMP_NUMBER);
         when(this.titlePk.getTitle()).thenReturn(TITLE_2);
         when(this.title.getTitleId()).thenReturn(titlePk);
         when(this.title.getToDate()).thenReturn(END_VALID_DATE);
-        Set<Title> titles=new HashSet<>(List.of(this.title));
+        Set<Title> titles=Set.of(this.title);
         when(employee.getTitles()).thenReturn(titles);
 
         when(salaryPk.getEmployeeNumber()).thenReturn(EMP_NUMBER);
         when(salary.getSalaryId()).thenReturn(salaryPk);
         when(salary.getSalary()).thenReturn(SALARY_2);
         when(salary.getToDate()).thenReturn(END_VALID_DATE);
-        Set<Salary> salaries=new HashSet<>(List.of(salary));
+        Set<Salary> salaries=Set.of(salary);
         when(employee.getSalaries()).thenReturn(salaries);
 
         this.employeeService.updateEmployee(EMP_NUMBER,employeeDto);
@@ -169,21 +171,21 @@ public class EmployeeServiceImplTest {
         when(this.deptEmp.getToDate()).thenReturn(END_VALID_DATE);
         when((this.empDeptsPk.getDepartmentNumber())).thenReturn(DEPARTMENT);
 
-        Set<DeptEmp> deptEmpsSet=new HashSet<>(List.of(deptEmp));
+        Set<DeptEmp> deptEmpsSet=Set.of(deptEmp);
         when(employee.getDepartments()).thenReturn(deptEmpsSet);
 
         when(this.titlePk.getEmployeeNumber()).thenReturn(EMP_NUMBER);
         when(this.titlePk.getTitle()).thenReturn(TITLE);
         when(this.title.getTitleId()).thenReturn(titlePk);
         when(this.title.getToDate()).thenReturn(END_VALID_DATE);
-        Set<Title> titles=new HashSet<>(List.of(this.title));
+        Set<Title> titles=Set.of(this.title);
         when(employee.getTitles()).thenReturn(titles);
 
         when(salaryPk.getEmployeeNumber()).thenReturn(EMP_NUMBER);
         when(salary.getSalaryId()).thenReturn(salaryPk);
         when(salary.getSalary()).thenReturn(SALARY);
         when(salary.getToDate()).thenReturn(END_VALID_DATE);
-        Set<Salary> salaries=new HashSet<>(List.of(salary));
+        Set<Salary> salaries=Set.of(salary);
         when(employee.getSalaries()).thenReturn(salaries);
 
         this.employeeService.updateEmployee(EMP_NUMBER,employeeDto);
@@ -209,10 +211,10 @@ public class EmployeeServiceImplTest {
         EmployeeDto employeeDto=getEmployeeDto();
         when(this.employeeRepository.findById(EMP_NUMBER)).thenReturn(Optional.empty());
 
-        RuntimeException ex= assertThrows(RuntimeException.class,()-> this.employeeService.updateEmployee(EMP_NUMBER, employeeDto));
+        EmployeeNotFoundException ex= assertThrows(EmployeeNotFoundException.class,
+                ()-> this.employeeService.updateEmployee(EMP_NUMBER, employeeDto));
+
         assertEquals(message, ex.getMessage());
-
-
         verify(this.employee, never()).setFirstName(employeeDto.getFirstName());
         verify(this.employee, never()).setLastName(employeeDto.getLastName());
         verify(this.employee, never()).setGender(employeeDto.getGender());

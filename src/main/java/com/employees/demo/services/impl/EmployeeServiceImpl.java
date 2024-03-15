@@ -8,6 +8,7 @@ import com.employees.demo.entities.DeptEmp;
 import com.employees.demo.entities.Employee;
 import com.employees.demo.entities.Salary;
 import com.employees.demo.entities.Title;
+import com.employees.demo.services.EmployeeNotFoundException;
 import com.employees.demo.services.EmployeeService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -72,7 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(TxType.REQUIRES_NEW)
     public void updateEmployee(final Long empNum,final EmployeeDto employeeDto) {
-        Employee employee=this.employeeRepository.findById(empNum).orElseThrow(()-> new RuntimeException("Employee not found for ["+empNum+"] emp number"));
+        Employee employee=this.employeeRepository.findById(empNum).orElseThrow(()-> new EmployeeNotFoundException(empNum));
         fillEmployee(employeeDto, employee);
         this.employeeRepository.save(employee);
         String departmentNUmber=employeeDto.getDepartmentNumber();
