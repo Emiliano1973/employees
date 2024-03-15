@@ -57,8 +57,6 @@ public class EmployeeServiceImplTest {
     @MockBean
     private  EmployeeRepository employeeRepository;
     @MockBean
-    private  DepartmentRepository departmentRepository;
-    @MockBean
     private  DeptEmpRepository deptEmpRepository;
     @MockBean
     private  SalaryRepository salaryRepository;
@@ -66,7 +64,6 @@ public class EmployeeServiceImplTest {
     private  TitleRepository titleRepository;
     @MockBean
     private Employee employee;
-
     @MockBean
     private DeptEmp deptEmp;
     @MockBean
@@ -230,8 +227,11 @@ public class EmployeeServiceImplTest {
         verify(this.title, never()).setToDate(any(LocalDate.class));
         verify(this.salary, never()).setToDate(any(LocalDate.class));
     }
-    /*
-     */
+    @Test
+    public void deleteByEmployerNumber(){
+        this.employeeService.deleteEmployee(EMP_NUMBER);
+        verify(this.employeeRepository).deleteById(EMP_NUMBER);
+    }
     private PaginationDto getPaginationDtoWithList(){
         return new PaginatorDtoBuilder().setCurrentPageTotalElements(1).setTotalPages(1)
                 .setCurrentPage(PAGE_NUMBER).setTotalPages(1).setTotalPages(1).setTotalElements(1)

@@ -5,15 +5,17 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class GenderJsonSerializer extends StdSerializer<Gender> {
+
     protected GenderJsonSerializer() {
         super(Gender.class);
     }
 
     @Override
     public void serialize(Gender gender, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        if(gender==null){
+        if(Objects.isNull(gender)){
             jsonGenerator.writeNull();
             return;
         }

@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class GenderJsonDeserializer extends StdDeserializer<Gender> {
     public GenderJsonDeserializer() {
-        this(null);
+        this(Gender.class);
     }
 
     public GenderJsonDeserializer(final Class<?> vc) {
