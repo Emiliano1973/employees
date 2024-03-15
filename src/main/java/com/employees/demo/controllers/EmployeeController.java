@@ -3,6 +3,7 @@ package com.employees.demo.controllers;
 import com.employees.demo.dtos.EmployeeDto;
 import com.employees.demo.dtos.PaginationDto;
 import com.employees.demo.services.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,7 +30,6 @@ public class EmployeeController {
         return ResponseEntity.of(this.employeeService.findByEmpNum(empNumber));
     }
 
-
     @GetMapping(value = "/pages", produces = MediaType.APPLICATION_JSON_VALUE)
     public PaginationDto getPage(@RequestParam("page") final int page,
                                       @RequestParam("pageSize") final  int pageSize){
@@ -37,20 +37,18 @@ public class EmployeeController {
 
     }
 
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> insertNewEmployee(@RequestBody final EmployeeDto employeeDto){
+    public ResponseEntity<?> insertNewEmployee(@Valid @RequestBody final EmployeeDto employeeDto){
         this.employeeService.insertNewEmployee(employeeDto);
         URI location = ServletUriComponentsBuilder.fromUriString("/employees").build()
                 .toUri();
         return ResponseEntity.created(location).build();
    }
 
-
     @CacheEvict(value = "employees", key ="#empNumber" )
     @PutMapping(value = "/{empNo}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateEmployee(@PathVariable("empNo") final Long empNumber,
-                                            @RequestBody final EmployeeDto employeeDto){
+                                            @Valid @RequestBody final EmployeeDto employeeDto){
         this.employeeService.updateEmployee(empNumber, employeeDto);
         return ResponseEntity.ok().build();
    }
