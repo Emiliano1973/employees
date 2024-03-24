@@ -15,7 +15,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/employees" )
+@RequestMapping("/api/services/employees" )
 @CacheConfig(cacheNames = "employees")
 public class EmployeeController {
 

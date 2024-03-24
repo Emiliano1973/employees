@@ -106,6 +106,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(TxType.REQUIRES_NEW)
     public void deleteEmployee(Long empNum) {
+        this.deptEmpRepository.deleteByEmpDeptsIdEmployeeNumber(empNum);
+        this.salaryRepository.deleteBySalaryIdEmployeeNumber(empNum);
+        this.titleRepository.deleteByTitleIdEmployeeNumber(empNum);
         this.employeeRepository.deleteById(empNum);
     }
 

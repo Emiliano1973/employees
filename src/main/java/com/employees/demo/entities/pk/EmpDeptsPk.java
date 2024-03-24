@@ -2,7 +2,6 @@ package com.employees.demo.entities.pk;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +10,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter @Setter @NoArgsConstructor
 public class EmpDeptsPk implements Serializable {
 
     @Column(name = "emp_no", nullable = false)
@@ -21,6 +20,10 @@ public class EmpDeptsPk implements Serializable {
     @Column(name = "dept_no", nullable = false)
     private String departmentNumber;
 
+    public EmpDeptsPk(long employeeNumber, String departmentNumber) {
+        this.employeeNumber = employeeNumber;
+        this.departmentNumber = departmentNumber;
+    }
 
     @Override
     public boolean equals(Object o) {

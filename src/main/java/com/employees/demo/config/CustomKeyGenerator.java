@@ -12,8 +12,9 @@ import java.util.stream.Stream;
 public class CustomKeyGenerator implements KeyGenerator {
     private static final String DELIMITER="_";
     @Override
-    public Object generate(Object target, Method method, Object... params) {
-        StringBuilder stringBuilder = new StringBuilder();
+    public Object generate(final Object target,
+                           final Method method, final Object... params) {
+       final  StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(target.getClass().getName()).append(DELIMITER)
                 .append(method.getName());
         if( Objects.isNull(params) || params.length==0){

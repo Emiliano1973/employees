@@ -5,4 +5,6 @@ import com.employees.demo.entities.pk.TitlePk;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TitleRepository  extends JpaRepository<Title, TitlePk> {
+
+    void deleteByTitleIdEmployeeNumber(long employeeNumber);
 }

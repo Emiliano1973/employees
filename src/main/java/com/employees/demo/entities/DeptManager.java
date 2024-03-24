@@ -31,6 +31,12 @@ public class DeptManager  implements Serializable {
     @JoinColumn(name = "dept_no", insertable = false, updatable = false)
     private Department department;
 
+    public DeptManager(long employeeNumber, String departmentNumber ,LocalDate fromDate, LocalDate toDate) {
+        this.deptManagerId=new EmpDeptsPk(employeeNumber, departmentNumber);
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -25,15 +26,12 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(EmployeeController.class)
+@WebMvcTest(controllers = EmployeeController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 public class EmployeeControllerTest {
 
     private static final Integer PAGE_NUMBER=Integer.valueOf(1);
@@ -58,7 +56,7 @@ public class EmployeeControllerTest {
     @Test
     public void shouldReturnFirstPageWhenEmPageCalled() throws Exception{
         when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE)).thenReturn(getPaginationDto());
-        mockMvc.perform(get("/employees/pages")
+        mockMvc.perform(get("/api/services/employees/pages")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("page", String.valueOf(PAGE_NUMBER))
                 .param("pageSize", String.valueOf(PAGE_SIZE))
@@ -72,7 +70,7 @@ public class EmployeeControllerTest {
     @Test
     public void shouldReturnEmptyWhenEmPageCalled() throws Exception{
         when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE)).thenReturn(getEmptyPaginationDto());
-        mockMvc.perform(get("/employees/pages")
+        mockMvc.perform(get("/api/services/employees/pages")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("page", String.valueOf(PAGE_NUMBER))
                         .param("pageSize", String.valueOf(PAGE_SIZE))
@@ -87,7 +85,7 @@ public class EmployeeControllerTest {
     @Test
     public void shouldReturnEmployeeDtoWhenUseEployeeNumber() throws Exception{
         when(this.employeeService.findByEmpNum(EMP_NUMBER)).thenReturn(Optional.of(getEmployeeDto()));
-        mockMvc.perform(get("/employees/{empNo}",EMP_NUMBER)
+        mockMvc.perform(get("/api/services/employees/{empNo}",EMP_NUMBER)
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print()).
                 andExpect(status().isOk())
@@ -100,7 +98,7 @@ public class EmployeeControllerTest {
     @Test
     public void shouldReturnCode201DtoWhenNewEmployeeIsAdded() throws Exception{
         EmployeeDto employeeDto=getEmployeeDto();
-        mockMvc.perform(post("/employees")
+        mockMvc.perform(post("/api/services/employees")
                         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(employeeDto))
                 ).andDo(print()).
                 andExpect(status().isCreated());
@@ -110,7 +108,7 @@ public class EmployeeControllerTest {
     @Test
     public void shouldReturnCodeOKDtoWhenNewEmployeeIsUpdated() throws Exception{
         EmployeeDto employeeDto=getEmployeeDto();
-        mockMvc.perform(put("/employees/{empNo}", EMP_NUMBER)
+        mockMvc.perform(put("/api/services/employees/{empNo}", EMP_NUMBER)
                         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(employeeDto))
                 ).andDo(print()).
                 andExpect(status().isOk());
@@ -120,7 +118,7 @@ public class EmployeeControllerTest {
     @Test
     public void shouldReturnHttpCode404WhenUseEployeeNumberIsNotFound() throws Exception {
         when(this.employeeService.findByEmpNum(EMP_NUMBER)).thenReturn(Optional.empty());
-        mockMvc.perform(get("/employees/{empNo}", EMP_NUMBER)
+        mockMvc.perform(get("/api/services/employees/{empNo}", EMP_NUMBER)
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print()).
                 andExpect(status().isNotFound());
@@ -128,7 +126,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void shouldDeleteEmployByItsEmpNumber() throws Exception{
-        mockMvc.perform(delete("/employees/{empNum}", EMP_NUMBER)
+        mockMvc.perform(delete("/api/services/employees/{empNum}", EMP_NUMBER)
                 ).andDo(print()).
                 andExpect(status().isOk()) ;
         verify(this.employeeService).deleteEmployee(EMP_NUMBER);
@@ -159,7 +157,7 @@ public class EmployeeControllerTest {
     }
 
     private EmployeeListItemDto getEmployeeListItemDto(){
-        return new EmployeeListItemDto(EMP_NUMBER,"Ciro", "Esposito",Gender.MALE, LocalDate.now(), LocalDate.now(), "deparment", "title");
+        return new EmployeeListItemDto(EMP_NUMBER,"Ciro", "Esposito", LocalDate.now(), "deparment", "title");
     }
 
     private EmployeeDto getEmployeeDto(){

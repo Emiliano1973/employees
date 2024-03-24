@@ -5,4 +5,6 @@ import com.employees.demo.entities.pk.EmpDeptsPk;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DeptEmpRepository extends JpaRepository<DeptEmp, EmpDeptsPk> {
+
+    void deleteByEmpDeptsIdEmployeeNumber(Long employeeNumber);
 }

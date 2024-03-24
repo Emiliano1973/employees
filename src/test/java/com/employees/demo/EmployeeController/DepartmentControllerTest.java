@@ -6,6 +6,7 @@ import com.employees.demo.dtos.ResponseDto;
 import com.employees.demo.services.DepartmentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -19,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(DepartmentController.class)
+@WebMvcTest(controllers = DepartmentController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 public class DepartmentControllerTest {
 
     private static final String CODE = "code";
@@ -33,7 +34,7 @@ public class DepartmentControllerTest {
     @Test
     public void shouldReturnDepartmentsLis() throws Exception {
         when(departmentService.getAllDepartments()).thenReturn(initDropDownDto());
-        mockMvc.perform(get("/departments")
+        mockMvc.perform(get("/api/services/departments")
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print()).
                 andExpect(status().isOk()).andExpect(jsonPath("$.elements").exists())

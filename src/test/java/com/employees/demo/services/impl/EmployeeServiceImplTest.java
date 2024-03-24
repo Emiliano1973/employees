@@ -243,7 +243,7 @@ public class EmployeeServiceImplTest {
 
 
     private EmployeeListItemDto getEmployeeListItemDto(){
-        return new EmployeeListItemDto(EMP_NUMBER,"Ciro", "Esposito", Gender.MALE, LocalDate.now(), LocalDate.now(), DEPARTMENT, TITLE);
+        return new EmployeeListItemDto(EMP_NUMBER,"Ciro", "Esposito", LocalDate.now(), DEPARTMENT, TITLE);
     }
 
     private EmployeeDto getEmployeeDto(){

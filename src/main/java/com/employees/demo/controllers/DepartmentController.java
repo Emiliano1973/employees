@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/departments")
+@RequestMapping("/api/services/departments")
 @CacheConfig(cacheNames = "departments")
 public class DepartmentController {
 
