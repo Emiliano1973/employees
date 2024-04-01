@@ -36,20 +36,20 @@ public class WebSecurityConfig {
     private final UserRepository userRepository;
 
     private final String jwtSecret;
-    private final int jwtExpirationMs;
+    private final int jwtExpirationMin;
 
     public WebSecurityConfig(final UserRepository userRepository,
             @Value("${employees.app.jwtSecret}") final String jwtSecret,
-            @Value("${employees.app.jwtExpirationMs}") final int jwtExpirationMs
+            @Value("${employees.app.jwtExpirationMin}") final int jwtExpirationMin
     ) {
         this.userRepository=userRepository;
         this.jwtSecret = jwtSecret;
-        this.jwtExpirationMs = jwtExpirationMs;
+        this.jwtExpirationMin = jwtExpirationMin;
     }
 
     @Bean
     public JwtUtils jwtUtils() {
-        return new JwtUtilsImpl(jwtSecret, jwtExpirationMs);
+        return new JwtUtilsImpl(jwtSecret, jwtExpirationMin);
     }
 
     @Bean

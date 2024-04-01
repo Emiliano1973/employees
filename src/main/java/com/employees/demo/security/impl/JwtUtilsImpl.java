@@ -1,13 +1,11 @@
 package com.employees.demo.security.impl;
 
 import com.employees.demo.security.JwtUtils;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.security.Key;
 import java.time.LocalDateTime;
@@ -16,13 +14,15 @@ import java.util.Date;
 import java.util.Map;
 
 public class JwtUtilsImpl implements JwtUtils {
-    private final String jwtSecret;
-    private final int jwtExpirationMs;
+    private static final Log logger = LogFactory.getLog(JwtUtilsImpl.class);
 
-    public JwtUtilsImpl(final String jwtSecret, final int jwtExpirationMs) {
+    private final String jwtSecret;
+    private final int jwtExpirationMin;
+
+    public JwtUtilsImpl(final String jwtSecret, final int jwtExpirationMin) {
         super();
         this.jwtSecret = jwtSecret;
-        this.jwtExpirationMs = jwtExpirationMs;
+        this.jwtExpirationMin = jwtExpirationMin;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class JwtUtilsImpl implements JwtUtils {
             return true;
         } catch (MalformedJwtException | ExpiredJwtException |
                  UnsupportedJwtException | IllegalArgumentException e) {
-            System.err.println("Invalid JWT token: {"+e.getMessage()+"}");
+            logger.error("Invalid JWT token: {"+e.getMessage()+"}");
         }
         return false;
     }
@@ -70,7 +70,7 @@ public class JwtUtilsImpl implements JwtUtils {
 
     private Date getExpiresDate(){
         return Date.from(LocalDateTime
-                .now().plusMinutes(this.jwtExpirationMs)
+                .now().plusMinutes(this.jwtExpirationMin)
                 .atZone(ZoneId.systemDefault()).toInstant());
     }
 }
