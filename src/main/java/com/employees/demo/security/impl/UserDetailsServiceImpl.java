@@ -7,11 +7,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
-@Service("customUserDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
@@ -21,9 +19,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found for username: " + username));
         Collection<String> roles=user.getRoles().stream().map(Role::getDescription).toList();
         return UserDetailsImpl.buildDetails(user.getUsername(), user.getEmail(), user.getPassword(), roles);
     }

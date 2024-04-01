@@ -1,37 +1,37 @@
 package com.employees.demo.security.impl;
 
 import com.employees.demo.security.JwtUtils;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Collection;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 
-@Service
 public class JwtUtilsImpl implements JwtUtils {
-
     private final String jwtSecret;
     private final int jwtExpirationMs;
 
-    public JwtUtilsImpl( @Value("${employees.app.jwtSecret}") final String jwtSecret,
-                         @Value("${employees.app.jwtExpirationMs}") final int jwtExpirationMs) {
+    public JwtUtilsImpl(final String jwtSecret, final int jwtExpirationMs) {
         super();
         this.jwtSecret = jwtSecret;
         this.jwtExpirationMs = jwtExpirationMs;
     }
 
     @Override
-    public String generateJwtToken(final String username,final Collection<String> roles) {
+    public String generateJwtToken(final String username,final String[] roles) {
         return Jwts.builder()
-                .setSubject(username)
-                .claims(Map.<String, String[]>of("roles", roles.toArray(new String[roles.size()])))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .subject(username)
+                .claims(Map.<String, String[]>of("roles", roles))
+                .issuedAt(new Date())
+                .expiration(getExpiresDate())
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -39,9 +39,9 @@ public class JwtUtilsImpl implements JwtUtils {
     @Override
     public String generateJwtToken(final String username) {
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(getExpiresDate())
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -52,12 +52,11 @@ public class JwtUtilsImpl implements JwtUtils {
                 .parseClaimsJws(token).getBody().getSubject();
     }
 
-
     @Override
     public boolean validateJwtToken(final String authToken) {
         try {
             Jwts.parser().setSigningKey(key()).build().parse(authToken);
-            return !isExpired(authToken);
+            return true;
         } catch (MalformedJwtException | ExpiredJwtException |
                  UnsupportedJwtException | IllegalArgumentException e) {
             System.err.println("Invalid JWT token: {"+e.getMessage()+"}");
@@ -65,13 +64,13 @@ public class JwtUtilsImpl implements JwtUtils {
         return false;
     }
 
-    private boolean isExpired(final String authToken){
-        return Jwts.parser().setSigningKey(key()).build()
-                .parseClaimsJws(authToken).getBody()
-                .getExpiration().before(new Date());
-    }
     private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.jwtSecret));
     }
 
+    private Date getExpiresDate(){
+        return Date.from(LocalDateTime
+                .now().plusMinutes(this.jwtExpirationMs)
+                .atZone(ZoneId.systemDefault()).toInstant());
+    }
 }

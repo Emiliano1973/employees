@@ -23,6 +23,5 @@ public class GenderJsonDeserializer extends StdDeserializer<Gender> {
            return null;
        }
        return Gender.getGenderByString(v);
-
     }
 }

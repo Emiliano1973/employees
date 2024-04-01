@@ -1,7 +1,12 @@
 package com.employees.demo.entities;
 
 import com.employees.demo.entities.pk.EmpDeptsPk;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,8 +24,6 @@ public class DeptEmp implements Serializable {
     private EmpDeptsPk empDeptsId;
 
 
-    @Column(name = "from_date")
-    private LocalDate fromDate;
 
     @Column(name = "to_date")
     private LocalDate toDate;
@@ -34,9 +37,8 @@ public class DeptEmp implements Serializable {
     private Department department;
 
 
-    public DeptEmp(long employeeNumber,String departmentNumber , LocalDate fromDate, LocalDate toDate) {
-        this.empDeptsId = new EmpDeptsPk(employeeNumber, departmentNumber);
-        this.fromDate = fromDate;
+    public DeptEmp(final long employeeNumber,final String departmentNumber ,final LocalDate fromDate, LocalDate toDate) {
+        this.empDeptsId = new EmpDeptsPk(employeeNumber, departmentNumber, fromDate);
         this.toDate = toDate;
     }
 

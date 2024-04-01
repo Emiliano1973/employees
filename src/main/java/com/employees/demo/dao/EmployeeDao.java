@@ -13,4 +13,5 @@ public interface EmployeeDao {
     Optional<EmployeeDto> findByEmpNumber(Long empNumber);
 
     long findMaxEmployeeNumber();
+
 }

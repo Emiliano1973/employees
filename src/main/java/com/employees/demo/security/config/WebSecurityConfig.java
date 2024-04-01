@@ -1,13 +1,15 @@
 package com.employees.demo.security.config;
 
-import com.employees.demo.security.AuthEntryPointJwt;
+import com.employees.demo.dao.repositories.UserRepository;
 import com.employees.demo.security.AuthTokenFilter;
 import com.employees.demo.security.JwtUtils;
 import com.employees.demo.security.impl.JwtUtilsImpl;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.employees.demo.security.impl.UserDetailsServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -20,7 +22,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,40 +29,43 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true,
- jsr250Enabled = true, prePostEnabled = true) // by default
+        jsr250Enabled = true, prePostEnabled = true) // by default
 ///@Profile("!test")
 public class WebSecurityConfig {
 
-    private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
+
     private final String jwtSecret;
     private final int jwtExpirationMs;
-    public WebSecurityConfig(
-            @Qualifier("customUserDetailsService") final UserDetailsService userDetailsService,
+
+    public WebSecurityConfig(final UserRepository userRepository,
             @Value("${employees.app.jwtSecret}") final String jwtSecret,
             @Value("${employees.app.jwtExpirationMs}") final int jwtExpirationMs
     ) {
-        this.userDetailsService = userDetailsService;
-        this.jwtSecret=jwtSecret;
-        this.jwtExpirationMs=jwtExpirationMs;
-    }
-
-    public AuthenticationEntryPoint unauthorizedHandler(){
-        return new AuthEntryPointJwt();
+        this.userRepository=userRepository;
+        this.jwtSecret = jwtSecret;
+        this.jwtExpirationMs = jwtExpirationMs;
     }
 
     @Bean
-    public JwtUtils jwtUtils(){
+    public JwtUtils jwtUtils() {
         return new JwtUtilsImpl(jwtSecret, jwtExpirationMs);
     }
 
     @Bean
     public OncePerRequestFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter(jwtUtils(), userDetailsService);
+        return new AuthTokenFilter(jwtUtils(), userDetailsService());
     }
+
+    @Bean
+    public UserDetailsService userDetailsService(){
+        return new UserDetailsServiceImpl(this.userRepository);
+    }
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -71,6 +75,7 @@ public class WebSecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -79,14 +84,16 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable).exceptionHandling(exception-> exception.authenticationEntryPoint(unauthorizedHandler()))
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/auth/**")
+        return http.csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(
+                        ( request,  response, authException)->response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                                "Error: Unauthorized")))
+                .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, "/api/auth/**")
                         .permitAll().requestMatchers("/api/services/**").authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         authenticationJwtTokenFilter(),
-                        UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+                        UsernamePasswordAuthenticationFilter.class).build();
     }
 
 }

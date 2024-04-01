@@ -7,4 +7,6 @@ import java.util.Collection;
 public interface DepartmentDao {
 
     Collection<DropDownDto> getAllDepartments();
+
+    Collection<Object[]> getEmployeesDeptGroups();
 }

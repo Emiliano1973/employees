@@ -10,7 +10,7 @@ import java.util.Objects;
 @Converter(autoApply = true)
 public class LocalDateConverter  implements AttributeConverter<LocalDate, Date> {
     @Override
-    public Date convertToDatabaseColumn(LocalDate attribute) {
+    public Date convertToDatabaseColumn(final LocalDate attribute) {
         if(Objects.isNull(attribute)){
             return null;
         }
@@ -18,7 +18,7 @@ public class LocalDateConverter  implements AttributeConverter<LocalDate, Date> 
     }
 
     @Override
-    public LocalDate convertToEntityAttribute(Date dbData) {
+    public LocalDate convertToEntityAttribute(final Date dbData) {
         if(Objects.isNull(dbData)){
             return null;
         }

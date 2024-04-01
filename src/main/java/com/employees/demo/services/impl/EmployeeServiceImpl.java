@@ -30,9 +30,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final SalaryRepository salaryRepository;
     private final TitleRepository titleRepository;
 
-    public EmployeeServiceImpl(final EmployeeDao employeeDao, final EmployeeRepository employeeRepository,
+    public EmployeeServiceImpl(final EmployeeDao employeeDao,
+                               final EmployeeRepository employeeRepository,
                                final DeptEmpRepository deptEmpRepository,
-                               final SalaryRepository salaryRepository, final TitleRepository titleRepository) {
+                               final SalaryRepository salaryRepository,
+                               final TitleRepository titleRepository) {
         this.employeeDao = employeeDao;
         this.employeeRepository = employeeRepository;
         this.deptEmpRepository = deptEmpRepository;
@@ -103,9 +105,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+
+
     @Override
     @Transactional(TxType.REQUIRES_NEW)
-    public void deleteEmployee(Long empNum) {
+    public void deleteEmployee(final Long empNum) {
         this.deptEmpRepository.deleteByEmpDeptsIdEmployeeNumber(empNum);
         this.salaryRepository.deleteBySalaryIdEmployeeNumber(empNum);
         this.titleRepository.deleteByTitleIdEmployeeNumber(empNum);

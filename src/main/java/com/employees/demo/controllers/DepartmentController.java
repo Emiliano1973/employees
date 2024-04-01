@@ -25,4 +25,10 @@ public class DepartmentController {
     public ResponseDto getAllDepartments(){
         return this.departmentService.getAllDepartments();
     }
+
+
+    @GetMapping(value ="/pie", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseDto getAllDepartmentsPie(){
+        return this.departmentService.getEmployeesDeptGroups();
+    }
 }

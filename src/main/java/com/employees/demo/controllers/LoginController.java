@@ -36,7 +36,6 @@ public class LoginController {
         this.userService.registerUser(signUpRequest);
         Map<String, String> messages=new HashMap<>(1);
          messages.put("message", "User "+signUpRequest.getUsername()+" is added");
-
          return  ResponseEntity.ok(messages);
     }
 }

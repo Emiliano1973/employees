@@ -23,7 +23,9 @@ public class UserDetailsImpl implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
 
 
-    public static UserDetailsImpl buildDetails(String username, String email, String password, Collection<String> authorities){
+    public static UserDetailsImpl buildDetails(final String username,
+                                               final String email, final String password,
+                                               final Collection<String> authorities){
         Objects.requireNonNull(username, "username cannot be null");
         Objects.requireNonNull(password, "password cannot be null");
         Objects.requireNonNull(email, "email cannot be null");
@@ -39,7 +41,8 @@ public class UserDetailsImpl implements UserDetails {
         }
         return new UserDetailsImpl(username,  email, password, authorities);
     }
-    private UserDetailsImpl(String username, String email, String password, Collection<String> authorities) {
+    private UserDetailsImpl(final String username,final String email,final String password,
+                            final Collection<String> authorities) {
         this.username = username;
         this.email = email;
         this.password = password;

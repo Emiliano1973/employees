@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class) // or @SpringBootTest
+@ExtendWith({SpringExtension.class}) // or @SpringBootTest
 @SpringBootTest
 public class EmployeeServiceImplTest {
     private static final  Long EMP_NUMBER=Long.valueOf(1001);

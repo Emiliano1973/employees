@@ -1,6 +1,5 @@
 package com.employees.demo.dtos;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -10,7 +9,7 @@ public class PaginatorDtoBuilder {
     private int totalPages;
     private int pageSize;
     private int totalElements;
-    private Collection<? extends Serializable> elements;
+    private Collection<?> elements;
 
     public PaginatorDtoBuilder setCurrentPage(int currentPage) {
         this.currentPage = currentPage;
@@ -37,7 +36,7 @@ public class PaginatorDtoBuilder {
         return this;
     }
 
-    public PaginatorDtoBuilder setElements(Collection<? extends Serializable> elements) {
+    public PaginatorDtoBuilder setElements(Collection<?> elements) {
         this.elements = new ArrayList<>(elements);
         return this;
     }

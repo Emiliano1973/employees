@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Getter @Setter
 public class SignUpDto implements Serializable {
@@ -19,4 +21,22 @@ public class SignUpDto implements Serializable {
     private  String password;
     @NotNull
     private  String[] roles;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SignUpDto signUpDto = (SignUpDto) o;
+        return Objects.equals(username, signUpDto.username)
+                && Objects.equals(email, signUpDto.email)
+                && Objects.equals(password, signUpDto.password) && Arrays.equals(roles, signUpDto.roles);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(username, email, password);
+        result = 31 * result + Arrays.hashCode(roles);
+        return result;
+    }
 }

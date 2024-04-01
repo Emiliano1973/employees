@@ -20,30 +20,32 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+
+import static jakarta.transaction.Transactional.TxType;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder encoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
 
-    public UserServiceImpl(final AuthenticationManager authenticationManager,
-                           final UserRepository userRepository,
-                           final RoleRepository roleRepository,
-                           final PasswordEncoder encoder,final JwtUtils jwtUtils) {
+    public UserServiceImpl(final AuthenticationManager authenticationManager,final PasswordEncoder encoder,
+                           final UserRepository userRepository,final RoleRepository roleRepository,
+                           final JwtUtils jwtUtils) {
+
         this.authenticationManager = authenticationManager;
+        this.encoder = encoder;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.encoder = encoder;
         this.jwtUtils = jwtUtils;
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional(TxType.REQUIRES_NEW)
     @Override
     public void registerUser(final SignUpDto signUpRequest) {
         if(this.userRepository.existsByUsername(signUpRequest.getUsername())){
@@ -54,7 +56,7 @@ public class UserServiceImpl implements UserService {
         }
         final User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
-                encoder.encode(signUpRequest.getPassword()));
+               this.encoder.encode(signUpRequest.getPassword()));
         String[] strRoles = signUpRequest.getRoles();
         Set<Role> roles=buildRoles(strRoles);
         user.setRoles(roles);
@@ -62,24 +64,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(TxType.NOT_SUPPORTED)
     public JjwtResponse authenticateUser(final LoginRequestDto loginRequest) {
-
-        Authentication authentication = authenticationManager.authenticate(
+        Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String[] roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toArray(String[]::new);
-
-        String jwt = jwtUtils.generateJwtToken(loginRequest.getUsername(), List.of(roles));
+        String jwt = this.jwtUtils.generateJwtToken(loginRequest.getUsername(), roles);
         return new JjwtResponse(jwt, loginRequest.getUsername(), userDetails.getEmail(), roles);
     }
 
     private Set<Role> buildRoles(final String[] strRoles){
         Set<Role> roles=new HashSet<>();
-        if(strRoles.length==0){
-         roles.add( this.roleRepository.findByDescription("USER")
-                 .orElseThrow(()->new RuntimeException("Error, Role not found")));
+        if(Objects.isNull(strRoles) || strRoles.length==0){
+         roles.add( this.roleRepository.findByDescription("USER").get());
         }
         final int len=strRoles.length;
         for (int i = 0; i < len; i++) {
@@ -88,4 +88,4 @@ public class UserServiceImpl implements UserService {
         }
         return roles;
     }
-}
+ }
