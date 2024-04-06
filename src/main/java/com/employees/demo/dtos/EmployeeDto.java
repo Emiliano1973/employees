@@ -8,48 +8,34 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 
-@Data @NoArgsConstructor
-public class EmployeeDto  implements Serializable {
-
-    private Long employeeNumber;
+public record EmployeeDto(
+     Long employeeNumber,
 
     @NotBlank(message = "First name cannot be blank")
-    private String firstName;
+     String firstName,
     @NotBlank(message = "Last name cannot be blank")
-    private String lastName;
+     String lastName,
     @NotNull(message = "Gender cannot be null")
     @JsonSerialize(using = GenderJsonSerializer.class)
     @JsonDeserialize(using = GenderJsonDeserializer.class)
-    private Gender gender;
+     Gender gender,
     @NotNull(message = "Birth date cannot be null")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDate birthDate;
+     LocalDate birthDate,
     @NotNull(message = "Hire date cannot be null")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDate hireDate;
+     LocalDate hireDate,
     @NotBlank(message = "Department number cannot be blank")
-    private String departmentNumber;
+     String departmentNumber,
     @NotNull(message = "Salary cannot be null")
-    private Integer salary;
+     Integer salary,
     @NotBlank(message = "Title cannot be blank")
-    private String title;
+     String title
+    )
+ implements Serializable {
 
-
-    public EmployeeDto(Long employeeNumber, String firstName, String lastName, Gender gender, LocalDate birthDate, LocalDate hireDate, String departmentNumber, Integer salary, String title) {
-        this.employeeNumber = employeeNumber;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.gender = gender;
-        this.birthDate = birthDate;
-        this.hireDate = hireDate;
-        this.departmentNumber = departmentNumber;
-        this.salary = salary;
-        this.title=title;
-    }
 }

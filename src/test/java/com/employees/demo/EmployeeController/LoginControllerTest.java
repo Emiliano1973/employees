@@ -76,20 +76,12 @@ public class LoginControllerTest {
 
 
     private LoginRequestDto getLoginRequest(){
-      LoginRequestDto loginRequestDto=  new LoginRequestDto();
-      loginRequestDto.setUsername(TEST_USERNAME);
-      loginRequestDto.setPassword(TEST_PASSWORD);
+      LoginRequestDto loginRequestDto=  new LoginRequestDto(TEST_USERNAME, TEST_PASSWORD);
       return loginRequestDto;
     }
 
     private SignUpDto getSignUpDto(){
-
-       SignUpDto signUpDto =new SignUpDto();
-       signUpDto.setUsername(TEST_USERNAME);
-       signUpDto.setPassword(TEST_PASSWORD);
-       signUpDto.setEmail(TEST_EMAIL);
-       signUpDto.setRoles(TEST_ROLES);
-       return  signUpDto;
+       return new SignUpDto(TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD, TEST_ROLES);
     }
 
     private JjwtResponse getJjwtResponse(){

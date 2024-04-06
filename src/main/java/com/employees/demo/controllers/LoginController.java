@@ -26,16 +26,16 @@ public class LoginController {
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody @Valid final LoginRequestDto loginRequest){
-        JjwtResponse response=this.userService.authenticateUser(loginRequest);
-        return  ResponseEntity.ok(response);
+    public ResponseEntity<?> login(@Valid @RequestBody final LoginRequestDto loginRequest) {
+        JjwtResponse response = this.userService.authenticateUser(loginRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/signup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> signup(@RequestBody @Valid SignUpDto signUpRequest){
+    public ResponseEntity<?> signup(@Valid @RequestBody final SignUpDto signUpRequest) {
         this.userService.registerUser(signUpRequest);
-        Map<String, String> messages=new HashMap<>(1);
-         messages.put("message", "User "+signUpRequest.getUsername()+" is added");
-         return  ResponseEntity.ok(messages);
+        Map<String, String> messages = new HashMap<>(1);
+        messages.put("message", "User " + signUpRequest.username() + " is added");
+        return ResponseEntity.ok(messages);
     }
 }

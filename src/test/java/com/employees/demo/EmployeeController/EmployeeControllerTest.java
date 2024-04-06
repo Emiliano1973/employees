@@ -114,7 +114,7 @@ public class EmployeeControllerTest {
         mockMvc.perform(put("/api/services/employees/{empNo}", EMP_NUMBER)
                         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(employeeDto))
                 ).andDo(print()).
-                andExpect(status().isOk());
+                andExpect(status().isNoContent());
         verify(this.employeeService).updateEmployee(EMP_NUMBER,employeeDto);
     }
 
@@ -131,7 +131,7 @@ public class EmployeeControllerTest {
     public void shouldDeleteEmployByItsEmpNumber() throws Exception{
         mockMvc.perform(delete("/api/services/employees/{empNum}", EMP_NUMBER)
                 ).andDo(print()).
-                andExpect(status().isOk()) ;
+                andExpect(status().isNoContent()) ;
         verify(this.employeeService).deleteEmployee(EMP_NUMBER);
     }
 

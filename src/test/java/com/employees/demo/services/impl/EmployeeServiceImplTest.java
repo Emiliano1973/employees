@@ -101,7 +101,7 @@ public class EmployeeServiceImplTest {
         assertNotNull(employeeDtoOptional);
         assertFalse(employeeDtoOptional.isEmpty());
         EmployeeDto employeeDtoOut=employeeDtoOptional.get();
-        assertEquals(EMP_NUMBER, employeeDtoOut.getEmployeeNumber());
+        assertEquals(EMP_NUMBER, employeeDtoOut.employeeNumber());
     }
 
     @Test
@@ -145,12 +145,12 @@ public class EmployeeServiceImplTest {
 
         this.employeeService.updateEmployee(EMP_NUMBER,employeeDto);
 
-        verify(this.employee).setFirstName(employeeDto.getFirstName());
-        verify(this.employee).setLastName(employeeDto.getLastName());
-        verify(this.employee).setGender(employeeDto.getGender());
-        verify(this.employee).setBirthDate(employeeDto.getBirthDate());
-        verify(this.employee).setHireDate(employeeDto.getHireDate());
-        verify(this.employee).setHireDate(employeeDto.getHireDate());
+        verify(this.employee).setFirstName(employeeDto.firstName());
+        verify(this.employee).setLastName(employeeDto.lastName());
+        verify(this.employee).setGender(employeeDto.gender());
+        verify(this.employee).setBirthDate(employeeDto.birthDate());
+        verify(this.employee).setHireDate(employeeDto.hireDate());
+        verify(this.employee).setHireDate(employeeDto.hireDate());
         verify(this.employeeRepository).save(any(Employee.class));
         verify(this.deptEmpRepository).save(any(DeptEmp.class));
         verify(this.salaryRepository).save(any(Salary.class));
@@ -190,12 +190,12 @@ public class EmployeeServiceImplTest {
 
         this.employeeService.updateEmployee(EMP_NUMBER,employeeDto);
 
-        verify(this.employee).setFirstName(employeeDto.getFirstName());
-        verify(this.employee).setLastName(employeeDto.getLastName());
-        verify(this.employee).setGender(employeeDto.getGender());
-        verify(this.employee).setBirthDate(employeeDto.getBirthDate());
-        verify(this.employee).setHireDate(employeeDto.getHireDate());
-        verify(this.employee).setHireDate(employeeDto.getHireDate());
+        verify(this.employee).setFirstName(employeeDto.firstName());
+        verify(this.employee).setLastName(employeeDto.lastName());
+        verify(this.employee).setGender(employeeDto.gender());
+        verify(this.employee).setBirthDate(employeeDto.birthDate());
+        verify(this.employee).setHireDate(employeeDto.hireDate());
+        verify(this.employee).setHireDate(employeeDto.hireDate());
         verify(this.employeeRepository).save(any(Employee.class));
         verify(this.deptEmpRepository, never()).save(any(DeptEmp.class));
         verify(this.salaryRepository, never()).save(any(Salary.class));
@@ -215,12 +215,12 @@ public class EmployeeServiceImplTest {
                 ()-> this.employeeService.updateEmployee(EMP_NUMBER, employeeDto));
 
         assertEquals(message, ex.getMessage());
-        verify(this.employee, never()).setFirstName(employeeDto.getFirstName());
-        verify(this.employee, never()).setLastName(employeeDto.getLastName());
-        verify(this.employee, never()).setGender(employeeDto.getGender());
-        verify(this.employee, never()).setBirthDate(employeeDto.getBirthDate());
-        verify(this.employee, never()).setHireDate(employeeDto.getHireDate());
-        verify(this.employee, never()).setHireDate(employeeDto.getHireDate());
+        verify(this.employee, never()).setFirstName(employeeDto.firstName());
+        verify(this.employee, never()).setLastName(employeeDto.lastName());
+        verify(this.employee, never()).setGender(employeeDto.gender());
+        verify(this.employee, never()).setBirthDate(employeeDto.birthDate());
+        verify(this.employee, never()).setHireDate(employeeDto.hireDate());
+        verify(this.employee, never()).setHireDate(employeeDto.hireDate());
         verify(this.employeeRepository, never()).save(any(Employee.class));
         verify(this.deptEmpRepository, never()).save(any(DeptEmp.class));
         verify(this.salaryRepository, never()).save(any(Salary.class));

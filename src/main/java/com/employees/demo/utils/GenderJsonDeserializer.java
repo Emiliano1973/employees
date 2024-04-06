@@ -9,15 +9,11 @@ import java.util.Objects;
 
 public class GenderJsonDeserializer extends StdDeserializer<Gender> {
     public GenderJsonDeserializer() {
-        this(Gender.class);
-    }
-
-    public GenderJsonDeserializer(final Class<?> vc) {
-        super(vc);
+        super(Gender.class);
     }
 
     @Override
-    public Gender deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+    public Gender deserialize(final JsonParser jsonParser,final DeserializationContext deserializationContext) throws IOException {
        String v= jsonParser.getValueAsString();
        if(Objects.isNull(v)){
            return null;

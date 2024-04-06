@@ -5,12 +5,12 @@ import jakarta.persistence.Converter;
 @Converter(autoApply = true)
 public class GenderConverter implements AttributeConverter<Gender, String> {
     @Override
-    public String convertToDatabaseColumn(Gender attribute) {
-        return attribute.getSex();
+    public String convertToDatabaseColumn(final Gender attribute) {
+        return attribute.getGender();
     }
 
     @Override
-    public Gender convertToEntityAttribute(String dbData) {
+    public Gender convertToEntityAttribute(final String dbData) {
         return Gender.getGenderByString(dbData);
     }
 }

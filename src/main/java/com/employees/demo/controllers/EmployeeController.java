@@ -58,14 +58,14 @@ public class EmployeeController {
     public ResponseEntity<?> updateEmployee(@PathVariable("empNo") final Long empNumber,
                                             @Valid @RequestBody final EmployeeDto employeeDto){
         this.employeeService.updateEmployee(empNumber, employeeDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
    }
 
     @CacheEvict(value = "employees", key ="#empNumber" )
     @DeleteMapping(value = "/{empNo}")
     public ResponseEntity<?> deleteEmployee(@PathVariable("empNo") final Long empNumber){
         this.employeeService.deleteEmployee(empNumber);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

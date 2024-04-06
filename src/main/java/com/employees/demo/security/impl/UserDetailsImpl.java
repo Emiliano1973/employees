@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class UserDetailsImpl implements UserDetails {
+public final class UserDetailsImpl implements UserDetails {
 
 
     private final String username;

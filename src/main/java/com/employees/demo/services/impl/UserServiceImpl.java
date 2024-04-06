@@ -48,16 +48,16 @@ public class UserServiceImpl implements UserService {
     @Transactional(TxType.REQUIRES_NEW)
     @Override
     public void registerUser(final SignUpDto signUpRequest) {
-        if(this.userRepository.existsByUsername(signUpRequest.getUsername())){
+        if(this.userRepository.existsByUsername(signUpRequest.username())){
             throw new RuntimeException("Error: Username is already taken!");
         }
-        if(this.userRepository.existsByEmail(signUpRequest.getEmail())){
+        if(this.userRepository.existsByEmail(signUpRequest.email())){
             throw new RuntimeException("Error: Email is already taken!");
         }
-        final User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-               this.encoder.encode(signUpRequest.getPassword()));
-        String[] strRoles = signUpRequest.getRoles();
+        final User user = new User(signUpRequest.username(),
+                signUpRequest.email(),
+               this.encoder.encode(signUpRequest.password()));
+        String[] strRoles = signUpRequest.roles();
         Set<Role> roles=buildRoles(strRoles);
         user.setRoles(roles);
         this.userRepository.save(user);
@@ -67,13 +67,13 @@ public class UserServiceImpl implements UserService {
     @Transactional(TxType.NOT_SUPPORTED)
     public JjwtResponse authenticateUser(final LoginRequestDto loginRequest) {
         Authentication authentication = this.authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String[] roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toArray(String[]::new);
-        String jwt = this.jwtUtils.generateJwtToken(loginRequest.getUsername(), roles);
-        return new JjwtResponse(jwt, loginRequest.getUsername(), userDetails.getEmail(), roles);
+        String jwt = this.jwtUtils.generateJwtToken(loginRequest.username(), roles);
+        return new JjwtResponse(jwt, loginRequest.username(), userDetails.getEmail(), roles);
     }
 
     private Set<Role> buildRoles(final String[] strRoles){

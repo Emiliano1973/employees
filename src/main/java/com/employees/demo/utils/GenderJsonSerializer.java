@@ -9,16 +9,17 @@ import java.util.Objects;
 
 public class GenderJsonSerializer extends StdSerializer<Gender> {
 
-    protected GenderJsonSerializer() {
+    public GenderJsonSerializer() {
         super(Gender.class);
     }
 
     @Override
-    public void serialize(Gender gender, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(final Gender gender,final JsonGenerator jsonGenerator,
+                          final SerializerProvider serializerProvider) throws IOException {
         if(Objects.isNull(gender)){
             jsonGenerator.writeNull();
             return;
         }
-        jsonGenerator.writeString(gender.getSex());
+        jsonGenerator.writeString(gender.getGender());
     }
 }

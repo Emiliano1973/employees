@@ -95,7 +95,7 @@ public class UserServiceImplTest {
     @Test
     public void whenTheRolesAreEmptyThenItShouldBeAddedUserDefaultStored() throws Exception {
         buildSignUpDto();
-        when(this.signUpRequest.getRoles()).thenReturn(new String[0]);
+        when(this.signUpRequest.roles()).thenReturn(new String[0]);
         when(this.userRepository.existsByEmail(TEST_EMAIL)).thenReturn(Boolean.FALSE);
         when(this.userRepository.existsByUsername(TEST_USERNAME)).thenReturn(Boolean.FALSE);
         when(this.encoder.encode(TEST_PASSWORD)).thenReturn(TEST_ENCODED_PASSWORD);
@@ -165,8 +165,8 @@ public class UserServiceImplTest {
 
     @Test
     public void whenTheCredentialsAreCorrectThenUserIAuthenticateANdReturnJWSResponse() throws Exception {
-        when(this.loginRequestDto.getUsername()).thenReturn(TEST_USERNAME);
-        when(this.loginRequestDto.getPassword()).thenReturn(TEST_PASSWORD);
+        when(this.loginRequestDto.username()).thenReturn(TEST_USERNAME);
+        when(this.loginRequestDto.password()).thenReturn(TEST_PASSWORD);
         when(authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(TEST_USERNAME, TEST_PASSWORD))).thenReturn(this.authentication);
         final UserDetails userDetails = getUserDetails();
@@ -182,10 +182,10 @@ public class UserServiceImplTest {
     }
 
     private void buildSignUpDto(){
-        when(this.signUpRequest.getUsername()).thenReturn(TEST_USERNAME);
-        when(this.signUpRequest.getEmail()).thenReturn(TEST_EMAIL);
-        when(this.signUpRequest.getPassword()).thenReturn(TEST_PASSWORD);
-        when(this.signUpRequest.getRoles()).thenReturn(TEST_ROLES);
+        when(this.signUpRequest.username()).thenReturn(TEST_USERNAME);
+        when(this.signUpRequest.email()).thenReturn(TEST_EMAIL);
+        when(this.signUpRequest.password()).thenReturn(TEST_PASSWORD);
+        when(this.signUpRequest.roles()).thenReturn(TEST_ROLES);
     }
 
     private UserDetails getUserDetails(){

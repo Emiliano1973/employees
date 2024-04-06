@@ -27,7 +27,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     private final DeptEmpRepository deptEmpRepository;
+
     private final SalaryRepository salaryRepository;
+
     private final TitleRepository titleRepository;
 
     public EmployeeServiceImpl(final EmployeeDao employeeDao,
@@ -62,23 +64,24 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setEmployeeNumber(newNUmber);
         fillEmployee(employeeDto, employee);
         this.employeeRepository.save(employee);
-        String deptNumber=employeeDto.getDepartmentNumber();
+        String deptNumber=employeeDto.departmentNumber();
         DeptEmp deptEmp=new DeptEmp(newNUmber,deptNumber,
-                employeeDto.getHireDate(), END_VALID_DATE  );
+                employeeDto.hireDate(), END_VALID_DATE  );
         this.deptEmpRepository.save(deptEmp);
-        Salary salary=new Salary(newNUmber, employeeDto.getSalary(), employeeDto.getHireDate(),
+        Salary salary=new Salary(newNUmber, employeeDto.salary(), employeeDto.hireDate(),
                 END_VALID_DATE );
         this.salaryRepository.save(salary);
-        Title title=new Title(newNUmber, employeeDto.getTitle(),employeeDto.getHireDate(), END_VALID_DATE);
+        Title title=new Title(newNUmber, employeeDto.title(),employeeDto.hireDate(), END_VALID_DATE);
         this.titleRepository.save(title);
     }
+
     @Override
     @Transactional(TxType.REQUIRES_NEW)
     public void updateEmployee(final Long empNum,final EmployeeDto employeeDto) {
         Employee employee=this.employeeRepository.findById(empNum).orElseThrow(()-> new EmployeeNotFoundException(empNum));
         fillEmployee(employeeDto, employee);
         this.employeeRepository.save(employee);
-        String departmentNUmber=employeeDto.getDepartmentNumber();
+        String departmentNUmber=employeeDto.departmentNumber();
         DeptEmp deptEmp= employee.getDepartments().stream()
                 .filter(dp->dp.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
         if(!deptEmp.getEmpDeptsId().getDepartmentNumber().equalsIgnoreCase(departmentNUmber)){
@@ -87,7 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             this.deptEmpRepository.save(deptEmpNew);
         }
 
-        Integer salaryNum=employeeDto.getSalary();
+        Integer salaryNum=employeeDto.salary();
         Salary salary=employee.getSalaries().stream().filter(sal-> sal.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
         if(salary.getSalary().intValue()!=salaryNum.intValue()){
             salary.setToDate(LocalDate.now());
@@ -95,7 +98,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             this.salaryRepository.save(newSalary);
         }
 
-        String titleS=employeeDto.getTitle();
+        String titleS=employeeDto.title();
         Title title=employee.getTitles().stream().filter(tit-> tit.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
         if(!title.getTitleId().getTitle().equalsIgnoreCase(titleS)){
             title.setToDate(LocalDate.now());
@@ -104,7 +107,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
     }
-
 
 
     @Override
@@ -117,11 +119,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private void fillEmployee(final EmployeeDto employeeDto, final Employee employee){
-        employee.setFirstName(employeeDto.getFirstName());
-        employee.setLastName(employeeDto.getLastName());
-        employee.setGender(employeeDto.getGender());
-        employee.setBirthDate(employeeDto.getBirthDate());
-        employee.setHireDate(employeeDto.getHireDate());
+        employee.setFirstName(employeeDto.firstName());
+        employee.setLastName(employeeDto.lastName());
+        employee.setGender(employeeDto.gender());
+        employee.setBirthDate(employeeDto.birthDate());
+        employee.setHireDate(employeeDto.hireDate());
     }
 
 }
