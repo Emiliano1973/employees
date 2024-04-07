@@ -42,7 +42,7 @@ public class Salary  implements Serializable {
 
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Salary salaryObj = (Salary) o;

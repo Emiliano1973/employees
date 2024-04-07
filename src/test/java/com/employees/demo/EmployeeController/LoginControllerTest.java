@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.verify;
@@ -59,6 +61,26 @@ public class LoginControllerTest {
                 .andExpect(jsonPath("$.roles[1]").value(TEST_ROLES[1]));
 
     }
+
+
+    @Test
+    public void whenUserAndPasswordAreWrongTheUserShouldNotBeAutenthicated() throws Exception{
+        LoginRequestDto loginRequest=getLoginRequest();
+        JjwtResponse jjwtResponse=getJjwtResponse();
+        when(this.userService.authenticateUser(loginRequest)).thenThrow(new BadCredentialsException("Wrong credentials"));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(loginRequest)
+                        )).andDo(print()).
+                andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.statusCode").value(HttpStatus.UNAUTHORIZED.value()))
+                .andExpect(jsonPath("$.error").value(HttpStatus.UNAUTHORIZED.getReasonPhrase()))
+                .andExpect(jsonPath("$.message").value("Wrong credentials"));
+
+
+    }
+
+
 
     @Test
     public void aNewSiteUserShouldBeAdded() throws Exception{

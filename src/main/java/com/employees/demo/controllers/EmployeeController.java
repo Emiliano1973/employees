@@ -2,6 +2,7 @@ package com.employees.demo.controllers;
 
 import com.employees.demo.dtos.EmployeeDto;
 import com.employees.demo.dtos.PaginationDto;
+import com.employees.demo.services.EmployeeNotFoundException;
 import com.employees.demo.services.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.cache.annotation.CacheConfig;
@@ -35,7 +36,8 @@ public class EmployeeController {
     @Cacheable(value="employees", key ="#empNumber" )
     @GetMapping(value = "/{empNo}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByEmpNo(@PathVariable("empNo") final Long empNumber){
-        return ResponseEntity.of(this.employeeService.findByEmpNum(empNumber));
+        EmployeeDto employeeDto=this.employeeService.findByEmpNum(empNumber).orElseThrow(()-> new EmployeeNotFoundException(empNumber));
+        return ResponseEntity.ok(employeeDto);
     }
 
     @GetMapping(value = "/pages", produces = MediaType.APPLICATION_JSON_VALUE)

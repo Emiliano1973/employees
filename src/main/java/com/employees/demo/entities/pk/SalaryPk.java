@@ -22,11 +22,12 @@ public class SalaryPk implements Serializable {
     private LocalDate fromDate;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final SalaryPk salaryPk = (SalaryPk) o;
-        return Objects.equals(employeeNumber, salaryPk.employeeNumber) && Objects.equals(fromDate, salaryPk.fromDate);
+        return Objects.equals(employeeNumber, salaryPk.employeeNumber)
+                && Objects.equals(fromDate, salaryPk.fromDate);
     }
 
     @Override

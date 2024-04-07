@@ -5,6 +5,7 @@ import com.employees.demo.dtos.EmployeeDto;
 import com.employees.demo.dtos.EmployeeListItemDto;
 import com.employees.demo.dtos.PaginationDto;
 import com.employees.demo.dtos.PaginatorDtoBuilder;
+import com.employees.demo.services.EmployeeNotFoundException;
 import com.employees.demo.services.EmployeeService;
 import com.employees.demo.utils.Gender;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,8 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -40,7 +41,7 @@ public class EmployeeControllerTest {
     private static final Integer PAGE_NUMBER=Integer.valueOf(1);
     private static final Integer PAGE_SIZE=Integer.valueOf(20);
 
-    private static final Long EMP_NUMBER=Long.valueOf(10001);
+    private static final Long EMP_NUMBER=Long.valueOf(10001l);
     private static final ObjectMapper objectMapper=new ObjectMapper();
 
     @Autowired
@@ -86,7 +87,7 @@ public class EmployeeControllerTest {
 
 
     @Test
-    public void shouldReturnEmployeeDtoWhenUseEployeeNumber() throws Exception{
+    public void shouldReturnEmployeeDtoWhenUseEmployeeNumber() throws Exception{
         when(this.employeeService.findByEmpNum(EMP_NUMBER)).thenReturn(Optional.of(getEmployeeDto()));
         mockMvc.perform(get("/api/services/employees/{empNo}",EMP_NUMBER)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -119,12 +120,30 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    public void shouldReturnCode404CodeDtoWhenNewEmployeesDorUpdateIsNoFound() throws Exception{
+        EmployeeDto employeeDto=getEmployeeDto();
+        doThrow(new EmployeeNotFoundException(EMP_NUMBER)).when(this.employeeService).updateEmployee(EMP_NUMBER, employeeDto);
+        mockMvc.perform(put("/api/services/employees/{empNo}", EMP_NUMBER)
+                        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(employeeDto))
+                ).andDo(print()).
+                andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.statusCode").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.getReasonPhrase()))
+                .andExpect(jsonPath("$.message").value("Employee not found for ["+EMP_NUMBER+"] emp number"));
+
+    }
+
+
+    @Test
     public void shouldReturnHttpCode404WhenUseEployeeNumberIsNotFound() throws Exception {
         when(this.employeeService.findByEmpNum(EMP_NUMBER)).thenReturn(Optional.empty());
         mockMvc.perform(get("/api/services/employees/{empNo}", EMP_NUMBER)
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print()).
-                andExpect(status().isNotFound());
+                andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.statusCode").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.error").value(HttpStatus.NOT_FOUND.getReasonPhrase()))
+                .andExpect(jsonPath("$.message").value("Employee not found for ["+EMP_NUMBER+"] emp number"));;
     }
 
     @Test
@@ -160,10 +179,10 @@ public class EmployeeControllerTest {
     }
 
     private EmployeeListItemDto getEmployeeListItemDto(){
-        return new EmployeeListItemDto(EMP_NUMBER,"Ciro", "Esposito", LocalDate.now(), "deparment", "title");
+        return new EmployeeListItemDto(EMP_NUMBER,"Ciro", "Esposito", LocalDate.now(), "department", "title");
     }
 
     private EmployeeDto getEmployeeDto(){
-        return new EmployeeDto(EMP_NUMBER,"Ciro", "Esposito",Gender.MALE, LocalDate.now(), LocalDate.now(), "deparment", 12000, "title");
+        return new EmployeeDto(EMP_NUMBER,"Ciro", "Esposito",Gender.MALE, LocalDate.now(), LocalDate.now(), "department", 12000, "title");
     }
 }
