@@ -1,7 +1,10 @@
 package com.employees.demo.services.impl;
 
 import com.employees.demo.dao.EmployeeDao;
-import com.employees.demo.dao.repositories.*;
+import com.employees.demo.dao.repositories.DeptEmpRepository;
+import com.employees.demo.dao.repositories.EmployeeRepository;
+import com.employees.demo.dao.repositories.SalaryRepository;
+import com.employees.demo.dao.repositories.TitleRepository;
 import com.employees.demo.dtos.EmployeeDto;
 import com.employees.demo.dtos.PaginationDto;
 import com.employees.demo.entities.DeptEmp;
@@ -22,6 +25,9 @@ import static jakarta.transaction.Transactional.TxType;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static final LocalDate END_VALID_DATE=LocalDate.of(9999, 1,1);
+    private static final String ORDER_BY_TEST="employeeNumber";
+
+    private static final String ORDER_BY_DIR_TEST="ASC";
 
     private final EmployeeDao employeeDao;
     private final EmployeeRepository employeeRepository;
@@ -46,8 +52,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional(TxType.NOT_SUPPORTED)
-    public PaginationDto findByPage(final int page,final int pageSize) {
-        return this.employeeDao.findPages(page, pageSize);
+    public PaginationDto findByPage(final int page,final int pageSize,
+                                    final String orderBy,final String orderByDir) {
+        return this.employeeDao.findPages(page, pageSize, orderBy, orderByDir);
     }
 
     @Override

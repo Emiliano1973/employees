@@ -47,10 +47,15 @@ public class EmployeeServiceImplTest {
     private static final String DEPARTMENT="dept1";
     private static final String DEPARTMENT_2="dept2";
 
+    private static final String ORDER_BY_TEST="employeeNumber";
+
+    private static final String ORDER_BY_DIR_TEST="ASC";
+
 
     private static final Integer  SALARY=Integer.valueOf(3333333);
     private static final Integer  SALARY_2=Integer.valueOf(4444444);
     private static final LocalDate END_VALID_DATE=LocalDate.of(9999, 1,1);
+
 
     @Autowired
     private EmployeeServiceImpl employeeService;
@@ -84,8 +89,8 @@ public class EmployeeServiceImplTest {
     @Test
     public void whenBrowsePageThePageShouldReturn() throws Exception{
         EmployeeListItemDto employeeListItemDto=getEmployeeListItemDto();
-        when(this.employeeDao.findPages(PAGE_NUMBER, PAGE_SIZE)).thenReturn(getPaginationDtoWithList());
-        PaginationDto paginationDto=this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE);
+        when(this.employeeDao.findPages(PAGE_NUMBER, PAGE_SIZE,  ORDER_BY_TEST, ORDER_BY_DIR_TEST)).thenReturn(getPaginationDtoWithList());
+        PaginationDto paginationDto=this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST);
         assertNotNull(paginationDto);
         assertEquals(PAGE_NUMBER, paginationDto.currentPage());
         assertEquals(PAGE_SIZE, paginationDto.pageSize());

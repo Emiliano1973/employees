@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface EmployeeDao {
 
 
-    PaginationDto findPages(int page, int pageSize);
+    PaginationDto findPages(int page, int pageSize,  String orderBy, String orderByDir);
 
     Optional<EmployeeDto> findByEmpNumber(Long empNumber);
 

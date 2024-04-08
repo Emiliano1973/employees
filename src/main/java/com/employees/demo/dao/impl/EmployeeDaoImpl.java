@@ -27,7 +27,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     private static final LocalDate DATE_FAKE_END = LocalDate.of(9999, 1, 1);
 
     @Override
-    public PaginationDto findPages(final int page, final int pageSize) {
+    public PaginationDto findPages(final int page, final int pageSize, final String orderBy,final String orderByDir) {
         final CriteriaBuilder cb = this.em.getCriteriaBuilder();
         int countEmp = countEmp(cb);
         if (countEmp == 0) {
@@ -49,19 +49,8 @@ public class EmployeeDaoImpl implements EmployeeDao {
                         titleJoin.get(Title_.titleId).get(TitlePk_.title)
                 ).where(cb.equal(titleJoin.get(Title_.toDate),
                         DATE_FAKE_END), cb.equal(empJoin.get(DeptEmp_.toDate),
-                        DATE_FAKE_END))
-                .groupBy(
-                        empDepartmentJoin.get(Department_.departmentName),
-                        titleJoin.get(Title_.titleId).get(TitlePk_.title),
-                        employeeRoot.get(Employee_.employeeNumber),
-                        employeeRoot.get(Employee_.firstName),
-                        employeeRoot.get(Employee_.lastName),
-                        employeeRoot.get(Employee_.birthDate),
-                        employeeRoot.get(Employee_.hireDate)
-                )
-                .orderBy(cb.asc(empDepartmentJoin.get(Department_.departmentName)),
-                        cb.asc(titleJoin.get(Title_.titleId).get(TitlePk_.title)),
-                        cb.asc(employeeRoot.get(Employee_.employeeNumber)));
+                        DATE_FAKE_END));
+        setOrder(criteriaQuery,cb, employeeRoot, empDepartmentJoin, titleJoin, orderBy, orderByDir);
         TypedQuery<EmployeeListItemDto> query = this.em.createQuery(criteriaQuery);
         query.setMaxResults(pageSize);
         query.setFirstResult((page - 1) * pageSize);
@@ -124,4 +113,56 @@ public class EmployeeDaoImpl implements EmployeeDao {
         return this.em.createQuery(criteriaQuery).getSingleResult().intValue();
     }
 
+
+    private  void setOrder(final CriteriaQuery<EmployeeListItemDto> cq,
+                           final CriteriaBuilder cb,final Root<Employee> employeeRoot,
+                           final Join<DeptEmp, Department> empDepartmentJoin,
+                           final Join<Employee, Title> titleJoin,
+                           final String orderBy,final String orderDir){
+
+        switch (orderBy){
+            case Employee_.EMPLOYEE_NUMBER : {
+                if("ASC".equalsIgnoreCase(orderDir)) {
+                    cq.orderBy(cb.asc(employeeRoot.get(Employee_.employeeNumber)));
+                }else {
+                    cq.orderBy(cb.desc(employeeRoot.get(Employee_.employeeNumber)));
+                }
+                break;
+            }
+            case "name" :{
+                if("ASC".equalsIgnoreCase(orderDir)) {
+                    cq.orderBy(cb.asc(employeeRoot.get(Employee_.lastName)), cb.asc(employeeRoot.get(Employee_.firstName)));
+                }else {
+                    cq.orderBy(cb.desc(employeeRoot.get(Employee_.lastName)), cb.asc(employeeRoot.get(Employee_.firstName)));
+                }
+                break;
+            }
+            case  Employee_.HIRE_DATE :{
+                if("ASC".equalsIgnoreCase(orderDir)) {
+                    cq.orderBy(cb.asc(employeeRoot.get(Employee_.hireDate)));
+                }else {
+                    cq.orderBy(cb.desc(employeeRoot.get(Employee_.hireDate)));
+                }
+                break;
+            }
+            case  Department_.DEPARTMENT_NAME :{
+                if("ASC".equalsIgnoreCase(orderDir)) {
+                    cq.orderBy(cb.asc(empDepartmentJoin.get(Department_.departmentNumber)));
+                }else {
+                    cq.orderBy(cb.desc(empDepartmentJoin.get(Department_.departmentNumber)));
+                }
+                break;
+            }
+            case  TitlePk_.TITLE: {
+                if("ASC".equalsIgnoreCase(orderDir)) {
+                    cq.orderBy(cb.asc(titleJoin.get(Title_.titleId).get(TitlePk_.title)));
+                }else {
+                    cq.orderBy(cb.desc(titleJoin.get(Title_.titleId).get(TitlePk_.title)));
+                }
+                break;
+            }
+        }
+
+
+    }
 }

@@ -42,8 +42,10 @@ public class EmployeeController {
 
     @GetMapping(value = "/pages", produces = MediaType.APPLICATION_JSON_VALUE)
     public PaginationDto getPage(@RequestParam("page") final int page,
-                                      @RequestParam("pageSize") final  int pageSize){
-        return  this.employeeService.findByPage(page, pageSize);
+                                      @RequestParam("pageSize") final  int pageSize, @RequestParam(value = "orderBy",
+            defaultValue = "employeeNumber") final String orderBy, @RequestParam(value = "orderByDir",
+            defaultValue = "ASC") final String orderByDir  ){
+        return  this.employeeService.findByPage(page, pageSize, orderBy, orderByDir);
 
     }
 

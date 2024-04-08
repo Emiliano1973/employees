@@ -40,8 +40,12 @@ public class EmployeeControllerTest {
 
     private static final Integer PAGE_NUMBER=Integer.valueOf(1);
     private static final Integer PAGE_SIZE=Integer.valueOf(20);
-
     private static final Long EMP_NUMBER=Long.valueOf(10001l);
+
+    private static final String ORDER_BY_TEST="employeeNumber";
+
+    private static final String ORDER_BY_DIR_TEST="ASC";
+
     private static final ObjectMapper objectMapper=new ObjectMapper();
 
     @Autowired
@@ -59,11 +63,13 @@ public class EmployeeControllerTest {
 
     @Test
     public void shouldReturnFirstPageWhenEmPageCalled() throws Exception{
-        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE)).thenReturn(getPaginationDto());
+        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST)).thenReturn(getPaginationDto());
         mockMvc.perform(get("/api/services/employees/pages")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("page", String.valueOf(PAGE_NUMBER))
                 .param("pageSize", String.valueOf(PAGE_SIZE))
+                                .param("orderBy", ORDER_BY_TEST)
+                                .param("orderByDir", ORDER_BY_DIR_TEST)
                 ).andDo(print()).
                 andExpect(status().isOk()).andExpect(jsonPath("$.elements").exists())
                 .andExpect(jsonPath("$.elements[*].employeeNumber").isNotEmpty())        ;
@@ -73,11 +79,13 @@ public class EmployeeControllerTest {
 
     @Test
     public void shouldReturnEmptyWhenEmPageCalled() throws Exception{
-        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE)).thenReturn(getEmptyPaginationDto());
+        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST)).thenReturn(getEmptyPaginationDto());
         mockMvc.perform(get("/api/services/employees/pages")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("page", String.valueOf(PAGE_NUMBER))
                         .param("pageSize", String.valueOf(PAGE_SIZE))
+                        .param("orderBy", ORDER_BY_TEST)
+                        .param("orderByDir", ORDER_BY_DIR_TEST)
                 ).andDo(print()).
                 andExpect(status().isOk())
                 .andExpect(jsonPath("$.elements").exists())

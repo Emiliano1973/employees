@@ -3,12 +3,11 @@ package com.employees.demo.services;
 import com.employees.demo.dtos.EmployeeDto;
 import com.employees.demo.dtos.PaginationDto;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeService {
 
-    PaginationDto findByPage(int page, int pageSize);
+    PaginationDto findByPage(int page, int pageSize, String orderBy, String orderByDir);
 
     Optional<EmployeeDto> findByEmpNum(Long empNum);
 
