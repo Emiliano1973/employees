@@ -25,9 +25,6 @@ import static jakarta.transaction.Transactional.TxType;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private static final LocalDate END_VALID_DATE=LocalDate.of(9999, 1,1);
-    private static final String ORDER_BY_TEST="employeeNumber";
-
-    private static final String ORDER_BY_DIR_TEST="ASC";
 
     private final EmployeeDao employeeDao;
     private final EmployeeRepository employeeRepository;
@@ -50,12 +47,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.titleRepository=titleRepository;
     }
 
+
     @Override
     @Transactional(TxType.NOT_SUPPORTED)
-    public PaginationDto findByPage(final int page,final int pageSize,
-                                    final String orderBy,final String orderByDir) {
-        return this.employeeDao.findPages(page, pageSize, orderBy, orderByDir);
+    public PaginationDto findByPage(int page, int pageSize, String orderBy, String orderByDir, Optional<String> searchLike){
+        return this.employeeDao.findPages(page, pageSize, orderBy, orderByDir, searchLike);
     }
+
 
     @Override
     @Transactional(TxType.NOT_SUPPORTED)

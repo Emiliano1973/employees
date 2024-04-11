@@ -10,18 +10,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/services/employees" )
@@ -36,7 +29,8 @@ public class EmployeeController {
     @Cacheable(value="employees", key ="#empNumber" )
     @GetMapping(value = "/{empNo}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getByEmpNo(@PathVariable("empNo") final Long empNumber){
-        EmployeeDto employeeDto=this.employeeService.findByEmpNum(empNumber).orElseThrow(()-> new EmployeeNotFoundException(empNumber));
+        EmployeeDto employeeDto=this.employeeService
+                .findByEmpNum(empNumber).orElseThrow(()-> new EmployeeNotFoundException(empNumber));
         return ResponseEntity.ok(employeeDto);
     }
 
@@ -44,9 +38,9 @@ public class EmployeeController {
     public PaginationDto getPage(@RequestParam("page") final int page,
                                       @RequestParam("pageSize") final  int pageSize, @RequestParam(value = "orderBy",
             defaultValue = "employeeNumber") final String orderBy, @RequestParam(value = "orderByDir",
-            defaultValue = "ASC") final String orderByDir  ){
-        return  this.employeeService.findByPage(page, pageSize, orderBy, orderByDir);
-
+            defaultValue = "ASC") final String orderByDir,
+                                 @RequestParam(value ="searchLike", required = false ) final String searchLike ){
+        return  this.employeeService.findByPage(page, pageSize, orderBy, orderByDir, Optional.<String>ofNullable(searchLike));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

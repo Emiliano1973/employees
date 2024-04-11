@@ -88,9 +88,9 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void whenBrowsePageThePageShouldReturn() throws Exception{
-        EmployeeListItemDto employeeListItemDto=getEmployeeListItemDto();
-        when(this.employeeDao.findPages(PAGE_NUMBER, PAGE_SIZE,  ORDER_BY_TEST, ORDER_BY_DIR_TEST)).thenReturn(getPaginationDtoWithList());
-        PaginationDto paginationDto=this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST);
+        Optional<String> empty=Optional.empty();
+        when(this.employeeDao.findPages(PAGE_NUMBER, PAGE_SIZE,  ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty)).thenReturn(getPaginationDtoWithList());
+        PaginationDto paginationDto=this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty);
         assertNotNull(paginationDto);
         assertEquals(PAGE_NUMBER, paginationDto.currentPage());
         assertEquals(PAGE_SIZE, paginationDto.pageSize());

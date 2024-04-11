@@ -27,10 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,7 +60,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void shouldReturnFirstPageWhenEmPageCalled() throws Exception{
-        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST)).thenReturn(getPaginationDto());
+        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, Optional.empty())).thenReturn(getPaginationDto());
         mockMvc.perform(get("/api/services/employees/pages")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("page", String.valueOf(PAGE_NUMBER))
@@ -79,7 +76,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void shouldReturnEmptyWhenEmPageCalled() throws Exception{
-        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST)).thenReturn(getEmptyPaginationDto());
+        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, Optional.empty())).thenReturn(getEmptyPaginationDto());
         mockMvc.perform(get("/api/services/employees/pages")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("page", String.valueOf(PAGE_NUMBER))
