@@ -47,13 +47,13 @@ public class DepartmentController {
             @PathVariable("deptNo") final String departmentNumber
             ,@PathVariable("type") final ContentType contentType) {
         Map<String, Object> params=new HashMap<>();
-
         params.put(REPORT_NAME_KEY, REPORT_DEP_WITH_PARAM_NAME);
         Map<String, Object> internalParams=new HashMap<>();
         internalParams.put(DEPT_NUM_KEY,departmentNumber);
         params.put(REPORT_PARAMS_KEY,internalParams);
         DownloadResponse downloadResponse=this.jasperDownloadManagerService.getDownloadResponse(params, contentType);
-        return ResponseEntity.ok().contentLength(downloadResponse.getResponseLength())
+        return ResponseEntity.ok()
+                .contentLength(downloadResponse.getResponseLength())
                 .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=" + downloadResponse.getFileName()+"." +contentType.getExtension()+ "")
