@@ -12,7 +12,10 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Embeddable
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SalaryPk implements Serializable {
 
     @Column(name = "emp_no", nullable = false)

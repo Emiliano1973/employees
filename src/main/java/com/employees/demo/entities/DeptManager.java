@@ -1,13 +1,7 @@
 package com.employees.demo.entities;
 
 import com.employees.demo.entities.pk.EmpDeptsPk;
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,8 +11,9 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "dept_manager")
-@Getter @Setter
-public class DeptManager  implements Serializable {
+@Getter
+@Setter
+public class DeptManager implements Serializable {
 
     @EmbeddedId
     private EmpDeptsPk deptManagerId;
@@ -34,8 +29,8 @@ public class DeptManager  implements Serializable {
     @JoinColumn(name = "dept_no", insertable = false, updatable = false)
     private Department department;
 
-    public DeptManager(long employeeNumber, String departmentNumber ,LocalDate fromDate, LocalDate toDate) {
-        this.deptManagerId=new EmpDeptsPk(employeeNumber, departmentNumber, fromDate);
+    public DeptManager(long employeeNumber, String departmentNumber, LocalDate fromDate, LocalDate toDate) {
+        this.deptManagerId = new EmpDeptsPk(employeeNumber, departmentNumber, fromDate);
         this.toDate = toDate;
     }
 

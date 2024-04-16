@@ -39,10 +39,10 @@ public class WebSecurityConfig {
     private final int jwtExpirationMin;
 
     public WebSecurityConfig(final UserRepository userRepository,
-            @Value("${employees.app.jwtSecret}") final String jwtSecret,
-            @Value("${employees.app.jwtExpirationMin}") final int jwtExpirationMin
+                             @Value("${employees.app.jwtSecret}") final String jwtSecret,
+                             @Value("${employees.app.jwtExpirationMin}") final int jwtExpirationMin
     ) {
-        this.userRepository=userRepository;
+        this.userRepository = userRepository;
         this.jwtSecret = jwtSecret;
         this.jwtExpirationMin = jwtExpirationMin;
     }
@@ -58,7 +58,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         return new UserDetailsServiceImpl(this.userRepository);
     }
 
@@ -86,10 +86,16 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(
-                        ( request,  response, authException)->response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                        (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
                                 "Error: Unauthorized")))
                 .authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, "/api/auth/**")
-                        .permitAll().requestMatchers("/api/services/**").authenticated())
+                        .permitAll().requestMatchers(HttpMethod.GET, "/api/services/**")
+                        .hasAnyAuthority("ADMIN", "USER").requestMatchers(HttpMethod.POST, "/api/services/**")
+                        .hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/services/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/services/**").hasAnyAuthority("ADMIN")
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
                         authenticationJwtTokenFilter(),

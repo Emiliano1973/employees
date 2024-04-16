@@ -37,35 +37,35 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class UserServiceImplTest {
 
-    private static final String TEST_USERNAME="username";
-    private static final String TEST_PASSWORD="password";
+    private static final String TEST_USERNAME = "username";
+    private static final String TEST_PASSWORD = "password";
 
-    private static final String TEST_EMAIL="test@test.it";
+    private static final String TEST_EMAIL = "test@test.it";
 
-    private static final String[] TEST_ROLES=new String[]{"USER", "ADMIN"};
+    private static final String[] TEST_ROLES = new String[]{"USER", "ADMIN"};
 
-    private static final Collection<? extends GrantedAuthority> TEST_ROLES_AUTHORITIES=new ArrayList<>(List.of(new SimpleGrantedAuthority("USER"), new SimpleGrantedAuthority( "ADMIN")));
-    private static final String TEST_ENCODED_PASSWORD="encodedPassword";
+    private static final Collection<? extends GrantedAuthority> TEST_ROLES_AUTHORITIES = new ArrayList<>(List.of(new SimpleGrantedAuthority("USER"), new SimpleGrantedAuthority("ADMIN")));
+    private static final String TEST_ENCODED_PASSWORD = "encodedPassword";
 
-    private static final String TEST_TOKEN="token";
+    private static final String TEST_TOKEN = "token";
 
 
     @Autowired
     private UserServiceImpl userService;
 
     @MockBean
-    private  AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
     @MockBean
-    private  PasswordEncoder encoder;
+    private PasswordEncoder encoder;
     @MockBean
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
     @MockBean
-    private  RoleRepository roleRepository;
+    private RoleRepository roleRepository;
 
-   // @MockBean
-   // private UserDetailsImpl userDetails;
+    // @MockBean
+    // private UserDetailsImpl userDetails;
     @MockBean
-    private  JwtUtils jwtUtils;
+    private JwtUtils jwtUtils;
     @MockBean
     private SignUpDto signUpRequest;
 
@@ -79,7 +79,7 @@ public class UserServiceImplTest {
     private Role role;
 
     @Test
-    public void whenTheSignUpIsValidThenItShouldBeStored() throws Exception{
+    public void whenTheSignUpIsValidThenItShouldBeStored() throws Exception {
         buildSignUpDto();
         when(this.userRepository.existsByEmail(TEST_EMAIL)).thenReturn(Boolean.FALSE);
         when(this.userRepository.existsByUsername(TEST_USERNAME)).thenReturn(Boolean.FALSE);
@@ -106,6 +106,7 @@ public class UserServiceImplTest {
         verify(this.roleRepository).findByDescription("USER");
         verify(this.userRepository).save(any(User.class));
     }
+
     @Test
     public void whenUsernameIsAlreadyTakenThenItShouldThrowException() throws Exception {
         buildSignUpDto();
@@ -145,7 +146,6 @@ public class UserServiceImplTest {
     }
 
 
-
     @Test
     public void whenEmailIsAlreadyTakenThenItShouldThrowException() throws Exception {
         buildSignUpDto();
@@ -171,26 +171,26 @@ public class UserServiceImplTest {
                 new UsernamePasswordAuthenticationToken(TEST_USERNAME, TEST_PASSWORD))).thenReturn(this.authentication);
         final UserDetails userDetails = getUserDetails();
         when(authentication.getPrincipal()).thenReturn(userDetails);
-        when(jwtUtils.generateJwtToken(TEST_USERNAME, TEST_ROLES )).thenReturn(TEST_TOKEN);
+        when(jwtUtils.generateJwtToken(TEST_USERNAME, TEST_ROLES)).thenReturn(TEST_TOKEN);
 
-        JjwtResponse response=this.userService.authenticateUser(this.loginRequestDto);
+        JjwtResponse response = this.userService.authenticateUser(this.loginRequestDto);
 
         assertNotNull(response);
-        assertEquals(TEST_USERNAME,response.username());
+        assertEquals(TEST_USERNAME, response.username());
         assertEquals(TEST_EMAIL, response.email());
         assertEquals(TEST_TOKEN, response.token());
     }
 
-    private void buildSignUpDto(){
+    private void buildSignUpDto() {
         when(this.signUpRequest.username()).thenReturn(TEST_USERNAME);
         when(this.signUpRequest.email()).thenReturn(TEST_EMAIL);
         when(this.signUpRequest.password()).thenReturn(TEST_PASSWORD);
         when(this.signUpRequest.roles()).thenReturn(TEST_ROLES);
     }
 
-    private UserDetails getUserDetails(){
-     return  UserDetailsImpl.buildDetails(TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD,
-             List.of(TEST_ROLES));
+    private UserDetails getUserDetails() {
+        return UserDetailsImpl.buildDetails(TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD,
+                List.of(TEST_ROLES));
     }
 
 }

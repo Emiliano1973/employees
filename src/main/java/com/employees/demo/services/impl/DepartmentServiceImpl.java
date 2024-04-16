@@ -23,15 +23,15 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public ResponseDto getAllDepartments() {
-        Collection<DropDownDto> dropDownDtos= this.departmentDao.getAllDepartments();
+        Collection<DropDownDto> dropDownDtos = this.departmentDao.getAllDepartments();
         return new ResponseDto(dropDownDtos.size(), dropDownDtos);
     }
 
     @Override
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public ResponseDto getEmployeesDeptGroups() {
-        Collection<Object[]> employeesPieTmp=this.departmentDao.getEmployeesDeptGroups();
-        Collection<Object[]> employeesPie=new ArrayList<>(List.<Object[]>of(new String[]{"Departments", "Perc. of Employees"}));
+        Collection<Object[]> employeesPieTmp = this.departmentDao.getEmployeesDeptGroups();
+        Collection<Object[]> employeesPie = new ArrayList<>(List.<Object[]>of(new String[]{"Departments", "Perc. of Employees"}));
         employeesPie.addAll(employeesPieTmp);
         return new ResponseDto(employeesPie.size(), employeesPie);
     }

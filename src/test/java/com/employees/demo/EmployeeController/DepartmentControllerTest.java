@@ -4,6 +4,7 @@ import com.employees.demo.controllers.DepartmentController;
 import com.employees.demo.dtos.DropDownDto;
 import com.employees.demo.dtos.ResponseDto;
 import com.employees.demo.services.DepartmentService;
+import com.employees.demo.services.DownloadManagerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -30,6 +31,9 @@ public class DepartmentControllerTest {
     @MockBean
     private DepartmentService departmentService;
 
+    @MockBean
+    private DownloadManagerService jasperDownloadManagerService;
+
 
     @Test
     public void shouldReturnDepartmentsLis() throws Exception {
@@ -44,4 +48,6 @@ public class DepartmentControllerTest {
     private ResponseDto initDropDownDto() {
         return new ResponseDto(1, List.of(new DropDownDto(CODE, DESC)));
     }
+
+
 }

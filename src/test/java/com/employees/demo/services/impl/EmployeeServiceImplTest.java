@@ -38,38 +38,38 @@ import static org.mockito.Mockito.*;
 @ExtendWith({SpringExtension.class}) // or @SpringBootTest
 @SpringBootTest
 public class EmployeeServiceImplTest {
-    private static final  Long EMP_NUMBER=Long.valueOf(1001);
-    private static final  Integer PAGE_NUMBER=Integer.valueOf(1);
-    private static final  Integer PAGE_SIZE=Integer.valueOf(10);
-    private static final String TITLE="title";
-    private static final String TITLE_2="title2";
+    private static final Long EMP_NUMBER = Long.valueOf(1001);
+    private static final Integer PAGE_NUMBER = Integer.valueOf(1);
+    private static final Integer PAGE_SIZE = Integer.valueOf(10);
+    private static final String TITLE = "title";
+    private static final String TITLE_2 = "title2";
 
-    private static final String DEPARTMENT="dept1";
-    private static final String DEPARTMENT_2="dept2";
+    private static final String DEPARTMENT = "dept1";
+    private static final String DEPARTMENT_2 = "dept2";
 
-    private static final String ORDER_BY_TEST="employeeNumber";
+    private static final String ORDER_BY_TEST = "employeeNumber";
 
-    private static final String ORDER_BY_DIR_TEST="ASC";
+    private static final String ORDER_BY_DIR_TEST = "ASC";
 
 
-    private static final Integer  SALARY=Integer.valueOf(3333333);
-    private static final Integer  SALARY_2=Integer.valueOf(4444444);
-    private static final LocalDate END_VALID_DATE=LocalDate.of(9999, 1,1);
+    private static final Integer SALARY = Integer.valueOf(3333333);
+    private static final Integer SALARY_2 = Integer.valueOf(4444444);
+    private static final LocalDate END_VALID_DATE = LocalDate.of(9999, 1, 1);
 
 
     @Autowired
     private EmployeeServiceImpl employeeService;
 
     @MockBean
-    private  EmployeeDao employeeDao;
+    private EmployeeDao employeeDao;
     @MockBean
-    private  EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
     @MockBean
-    private  DeptEmpRepository deptEmpRepository;
+    private DeptEmpRepository deptEmpRepository;
     @MockBean
-    private  SalaryRepository salaryRepository;
+    private SalaryRepository salaryRepository;
     @MockBean
-    private  TitleRepository titleRepository;
+    private TitleRepository titleRepository;
     @MockBean
     private Employee employee;
     @MockBean
@@ -87,10 +87,10 @@ public class EmployeeServiceImplTest {
     private SalaryPk salaryPk;
 
     @Test
-    public void whenBrowsePageThePageShouldReturn() throws Exception{
-        Optional<String> empty=Optional.empty();
-        when(this.employeeDao.findPages(PAGE_NUMBER, PAGE_SIZE,  ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty)).thenReturn(getPaginationDtoWithList());
-        PaginationDto paginationDto=this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty);
+    public void whenBrowsePageThePageShouldReturn() throws Exception {
+        Optional<String> empty = Optional.empty();
+        when(this.employeeDao.findPages(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty)).thenReturn(getPaginationDtoWithList());
+        PaginationDto paginationDto = this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty);
         assertNotNull(paginationDto);
         assertEquals(PAGE_NUMBER, paginationDto.currentPage());
         assertEquals(PAGE_SIZE, paginationDto.pageSize());
@@ -99,19 +99,19 @@ public class EmployeeServiceImplTest {
 
 
     @Test
-    public void whenISendAEmpNumThenItShouldReturnAEmployeeData() throws Exception{
-        EmployeeDto employeeDto=getEmployeeDto();
+    public void whenISendAEmpNumThenItShouldReturnAEmployeeData() throws Exception {
+        EmployeeDto employeeDto = getEmployeeDto();
         when((this.employeeDao.findByEmpNumber(EMP_NUMBER))).thenReturn(Optional.of(employeeDto));
-        Optional<EmployeeDto> employeeDtoOptional=this.employeeService.findByEmpNum(EMP_NUMBER);
+        Optional<EmployeeDto> employeeDtoOptional = this.employeeService.findByEmpNum(EMP_NUMBER);
         assertNotNull(employeeDtoOptional);
         assertFalse(employeeDtoOptional.isEmpty());
-        EmployeeDto employeeDtoOut=employeeDtoOptional.get();
+        EmployeeDto employeeDtoOut = employeeDtoOptional.get();
         assertEquals(EMP_NUMBER, employeeDtoOut.employeeNumber());
     }
 
     @Test
-    public void aNewEmployeeShouldBeInsertedInDatabase() throws Exception{
-        EmployeeDto employeeDto=getEmployeeDto();
+    public void aNewEmployeeShouldBeInsertedInDatabase() throws Exception {
+        EmployeeDto employeeDto = getEmployeeDto();
         when(employeeDao.findMaxEmployeeNumber()).thenReturn(EMP_NUMBER);
         this.employeeService.insertNewEmployee(employeeDto);
         verify(this.employeeRepository).save(any(Employee.class));
@@ -122,8 +122,8 @@ public class EmployeeServiceImplTest {
     }
 
     @Test
-    public void anEmployeeShouldBeUpdatedInDatabase() throws Exception{
-        EmployeeDto employeeDto=getEmployeeDto();
+    public void anEmployeeShouldBeUpdatedInDatabase() throws Exception {
+        EmployeeDto employeeDto = getEmployeeDto();
         when(this.employeeRepository.findById(EMP_NUMBER)).thenReturn(Optional.of(this.employee));
         when(this.employee.getEmployeeNumber()).thenReturn(EMP_NUMBER);
 
@@ -132,23 +132,23 @@ public class EmployeeServiceImplTest {
         when(this.deptEmp.getToDate()).thenReturn(END_VALID_DATE);
         when((this.empDeptsPk.getDepartmentNumber())).thenReturn(DEPARTMENT_2);
 
-        Set<DeptEmp> deptEmpsSet=Set.of(deptEmp);
+        Set<DeptEmp> deptEmpsSet = Set.of(deptEmp);
         when(employee.getDepartments()).thenReturn(deptEmpsSet);
         when(this.titlePk.getEmployeeNumber()).thenReturn(EMP_NUMBER);
         when(this.titlePk.getTitle()).thenReturn(TITLE_2);
         when(this.title.getTitleId()).thenReturn(titlePk);
         when(this.title.getToDate()).thenReturn(END_VALID_DATE);
-        Set<Title> titles=Set.of(this.title);
+        Set<Title> titles = Set.of(this.title);
         when(employee.getTitles()).thenReturn(titles);
 
         when(salaryPk.getEmployeeNumber()).thenReturn(EMP_NUMBER);
         when(salary.getSalaryId()).thenReturn(salaryPk);
         when(salary.getSalary()).thenReturn(SALARY_2);
         when(salary.getToDate()).thenReturn(END_VALID_DATE);
-        Set<Salary> salaries=Set.of(salary);
+        Set<Salary> salaries = Set.of(salary);
         when(employee.getSalaries()).thenReturn(salaries);
 
-        this.employeeService.updateEmployee(EMP_NUMBER,employeeDto);
+        this.employeeService.updateEmployee(EMP_NUMBER, employeeDto);
 
         verify(this.employee).setFirstName(employeeDto.firstName());
         verify(this.employee).setLastName(employeeDto.lastName());
@@ -166,8 +166,8 @@ public class EmployeeServiceImplTest {
     }
 
     @Test
-    public void anEmployeeShouldBeUpdatedAndSalaryDeptAndTitleNotChangedInDatabase() throws Exception{
-        EmployeeDto employeeDto=getEmployeeDto();
+    public void anEmployeeShouldBeUpdatedAndSalaryDeptAndTitleNotChangedInDatabase() throws Exception {
+        EmployeeDto employeeDto = getEmployeeDto();
         when(this.employeeRepository.findById(EMP_NUMBER)).thenReturn(Optional.of(this.employee));
         when(this.employee.getEmployeeNumber()).thenReturn(EMP_NUMBER);
 
@@ -176,24 +176,24 @@ public class EmployeeServiceImplTest {
         when(this.deptEmp.getToDate()).thenReturn(END_VALID_DATE);
         when((this.empDeptsPk.getDepartmentNumber())).thenReturn(DEPARTMENT);
 
-        Set<DeptEmp> deptEmpsSet=Set.of(deptEmp);
+        Set<DeptEmp> deptEmpsSet = Set.of(deptEmp);
         when(employee.getDepartments()).thenReturn(deptEmpsSet);
 
         when(this.titlePk.getEmployeeNumber()).thenReturn(EMP_NUMBER);
         when(this.titlePk.getTitle()).thenReturn(TITLE);
         when(this.title.getTitleId()).thenReturn(titlePk);
         when(this.title.getToDate()).thenReturn(END_VALID_DATE);
-        Set<Title> titles=Set.of(this.title);
+        Set<Title> titles = Set.of(this.title);
         when(employee.getTitles()).thenReturn(titles);
 
         when(salaryPk.getEmployeeNumber()).thenReturn(EMP_NUMBER);
         when(salary.getSalaryId()).thenReturn(salaryPk);
         when(salary.getSalary()).thenReturn(SALARY);
         when(salary.getToDate()).thenReturn(END_VALID_DATE);
-        Set<Salary> salaries=Set.of(salary);
+        Set<Salary> salaries = Set.of(salary);
         when(employee.getSalaries()).thenReturn(salaries);
 
-        this.employeeService.updateEmployee(EMP_NUMBER,employeeDto);
+        this.employeeService.updateEmployee(EMP_NUMBER, employeeDto);
 
         verify(this.employee).setFirstName(employeeDto.firstName());
         verify(this.employee).setLastName(employeeDto.lastName());
@@ -211,13 +211,13 @@ public class EmployeeServiceImplTest {
     }
 
     @Test
-    public void ShouldInExceptionIfEmployeeNotFoundForEmpNumber() throws Exception{
-        final String message="Employee not found for ["+EMP_NUMBER+"] emp number";
-        EmployeeDto employeeDto=getEmployeeDto();
+    public void ShouldInExceptionIfEmployeeNotFoundForEmpNumber() throws Exception {
+        final String message = "Employee not found for [" + EMP_NUMBER + "] emp number";
+        EmployeeDto employeeDto = getEmployeeDto();
         when(this.employeeRepository.findById(EMP_NUMBER)).thenReturn(Optional.empty());
 
-        EmployeeNotFoundException ex= assertThrows(EmployeeNotFoundException.class,
-                ()-> this.employeeService.updateEmployee(EMP_NUMBER, employeeDto));
+        EmployeeNotFoundException ex = assertThrows(EmployeeNotFoundException.class,
+                () -> this.employeeService.updateEmployee(EMP_NUMBER, employeeDto));
 
         assertEquals(message, ex.getMessage());
         verify(this.employee, never()).setFirstName(employeeDto.firstName());
@@ -234,24 +234,25 @@ public class EmployeeServiceImplTest {
         verify(this.title, never()).setToDate(any(LocalDate.class));
         verify(this.salary, never()).setToDate(any(LocalDate.class));
     }
+
     @Test
-    public void deleteByEmployerNumber(){
+    public void deleteByEmployerNumber() {
         this.employeeService.deleteEmployee(EMP_NUMBER);
         verify(this.employeeRepository).deleteById(EMP_NUMBER);
     }
-    private PaginationDto getPaginationDtoWithList(){
+
+    private PaginationDto getPaginationDtoWithList() {
         return new PaginatorDtoBuilder().setCurrentPageTotalElements(1).setTotalPages(1)
                 .setCurrentPage(PAGE_NUMBER).setTotalPages(1).setTotalPages(1).setTotalElements(1)
-                .setPageSize(PAGE_SIZE).setElements( List.of(getEmployeeListItemDto()))
+                .setPageSize(PAGE_SIZE).setElements(List.of(getEmployeeListItemDto()))
                 .setTotalPages(1).createPaginatorDto();
     }
 
-
-    private EmployeeListItemDto getEmployeeListItemDto(){
-        return new EmployeeListItemDto(EMP_NUMBER,"Ciro", "Esposito", LocalDate.now(), DEPARTMENT, TITLE);
+    private EmployeeListItemDto getEmployeeListItemDto() {
+        return new EmployeeListItemDto(EMP_NUMBER, "Ciro", "Esposito", LocalDate.now(), DEPARTMENT, TITLE);
     }
 
-    private EmployeeDto getEmployeeDto(){
-        return new EmployeeDto(EMP_NUMBER,"Ciro", "Esposito",Gender.MALE, LocalDate.now(), LocalDate.now(), DEPARTMENT, SALARY, TITLE);
+    private EmployeeDto getEmployeeDto() {
+        return new EmployeeDto(EMP_NUMBER, "Ciro", "Esposito", Gender.MALE, LocalDate.now(), LocalDate.now(), DEPARTMENT, SALARY, TITLE);
     }
 }

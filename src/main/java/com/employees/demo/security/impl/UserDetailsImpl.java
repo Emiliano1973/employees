@@ -23,30 +23,31 @@ public final class UserDetailsImpl implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
 
 
-    public static UserDetailsImpl buildDetails(final String username,
-                                               final String email, final String password,
-                                               final Collection<String> authorities){
-        Objects.requireNonNull(username, "username cannot be null");
-        Objects.requireNonNull(password, "password cannot be null");
-        Objects.requireNonNull(email, "email cannot be null");
-        Objects.requireNonNull(authorities, "authorities cannot be null");
-        if(username.trim().equals("")){
-            throw new IllegalArgumentException("Username cannot be null");
-        }
-        if(password.trim().equals("")){
-            throw new IllegalArgumentException("Password cannot be null");
-        }
-        if(email.trim().equals("")){
-            throw new IllegalArgumentException("Email cannot be null");
-        }
-        return new UserDetailsImpl(username,  email, password, authorities);
-    }
-    private UserDetailsImpl(final String username,final String email,final String password,
+    private UserDetailsImpl(final String username, final String email, final String password,
                             final Collection<String> authorities) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.authorities = authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+
+    public static UserDetailsImpl buildDetails(final String username,
+                                               final String email, final String password,
+                                               final Collection<String> authorities) {
+        Objects.requireNonNull(username, "username cannot be null");
+        Objects.requireNonNull(password, "password cannot be null");
+        Objects.requireNonNull(email, "email cannot be null");
+        Objects.requireNonNull(authorities, "authorities cannot be null");
+        if (username.trim().equals("")) {
+            throw new IllegalArgumentException("Username cannot be null");
+        }
+        if (password.trim().equals("")) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+        if (email.trim().equals("")) {
+            throw new IllegalArgumentException("Email cannot be null");
+        }
+        return new UserDetailsImpl(username, email, password, authorities);
     }
 
     @Override
@@ -67,6 +68,7 @@ public final class UserDetailsImpl implements UserDetails {
     public String getEmail() {
         return email;
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

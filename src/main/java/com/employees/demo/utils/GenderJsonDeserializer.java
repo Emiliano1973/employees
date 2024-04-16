@@ -13,11 +13,11 @@ public class GenderJsonDeserializer extends StdDeserializer<Gender> {
     }
 
     @Override
-    public Gender deserialize(final JsonParser jsonParser,final DeserializationContext deserializationContext) throws IOException {
-       String v= jsonParser.getValueAsString();
-       if(Objects.isNull(v)){
-           return null;
-       }
-       return Gender.getGenderByString(v);
+    public Gender deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) throws IOException {
+        String v = jsonParser.getValueAsString();
+        if (Objects.isNull(v)) {
+            return null;
+        }
+        return Gender.getGenderByString(v);
     }
 }

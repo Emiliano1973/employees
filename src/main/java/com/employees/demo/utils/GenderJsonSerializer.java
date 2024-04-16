@@ -14,9 +14,9 @@ public class GenderJsonSerializer extends StdSerializer<Gender> {
     }
 
     @Override
-    public void serialize(final Gender gender,final JsonGenerator jsonGenerator,
+    public void serialize(final Gender gender, final JsonGenerator jsonGenerator,
                           final SerializerProvider serializerProvider) throws IOException {
-        if(Objects.isNull(gender)){
+        if (Objects.isNull(gender)) {
             jsonGenerator.writeNull();
             return;
         }

@@ -24,7 +24,7 @@ import static jakarta.transaction.Transactional.TxType;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private static final LocalDate END_VALID_DATE=LocalDate.of(9999, 1,1);
+    private static final LocalDate END_VALID_DATE = LocalDate.of(9999, 1, 1);
 
     private final EmployeeDao employeeDao;
     private final EmployeeRepository employeeRepository;
@@ -44,13 +44,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeeRepository = employeeRepository;
         this.deptEmpRepository = deptEmpRepository;
         this.salaryRepository = salaryRepository;
-        this.titleRepository=titleRepository;
+        this.titleRepository = titleRepository;
     }
 
 
     @Override
     @Transactional(TxType.NOT_SUPPORTED)
-    public PaginationDto findByPage(int page, int pageSize, String orderBy, String orderByDir, Optional<String> searchLike){
+    public PaginationDto findByPage(int page, int pageSize, String orderBy, String orderByDir, Optional<String> searchLike) {
         return this.employeeDao.findPages(page, pageSize, orderBy, orderByDir, searchLike);
     }
 
@@ -64,50 +64,50 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(TxType.REQUIRES_NEW)
     public void insertNewEmployee(final EmployeeDto employeeDto) {
-        long newNUmber=this.employeeDao.findMaxEmployeeNumber()+1;
-        Employee employee=new Employee();
+        long newNUmber = this.employeeDao.findMaxEmployeeNumber() + 1;
+        Employee employee = new Employee();
         employee.setEmployeeNumber(newNUmber);
         fillEmployee(employeeDto, employee);
         this.employeeRepository.save(employee);
-        String deptNumber=employeeDto.departmentNumber();
-        DeptEmp deptEmp=new DeptEmp(newNUmber,deptNumber,
-                employeeDto.hireDate(), END_VALID_DATE  );
+        String deptNumber = employeeDto.departmentNumber();
+        DeptEmp deptEmp = new DeptEmp(newNUmber, deptNumber,
+                employeeDto.hireDate(), END_VALID_DATE);
         this.deptEmpRepository.save(deptEmp);
-        Salary salary=new Salary(newNUmber, employeeDto.salary(), employeeDto.hireDate(),
-                END_VALID_DATE );
+        Salary salary = new Salary(newNUmber, employeeDto.salary(), employeeDto.hireDate(),
+                END_VALID_DATE);
         this.salaryRepository.save(salary);
-        Title title=new Title(newNUmber, employeeDto.title(),employeeDto.hireDate(), END_VALID_DATE);
+        Title title = new Title(newNUmber, employeeDto.title(), employeeDto.hireDate(), END_VALID_DATE);
         this.titleRepository.save(title);
     }
 
     @Override
     @Transactional(TxType.REQUIRES_NEW)
-    public void updateEmployee(final Long empNum,final EmployeeDto employeeDto) {
-        Employee employee=this.employeeRepository.findById(empNum).orElseThrow(()-> new EmployeeNotFoundException(empNum));
+    public void updateEmployee(final Long empNum, final EmployeeDto employeeDto) {
+        Employee employee = this.employeeRepository.findById(empNum).orElseThrow(() -> new EmployeeNotFoundException(empNum));
         fillEmployee(employeeDto, employee);
         this.employeeRepository.save(employee);
-        String departmentNUmber=employeeDto.departmentNumber();
-        DeptEmp deptEmp= employee.getDepartments().stream()
-                .filter(dp->dp.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
-        if(!deptEmp.getEmpDeptsId().getDepartmentNumber().equalsIgnoreCase(departmentNUmber)){
+        String departmentNUmber = employeeDto.departmentNumber();
+        DeptEmp deptEmp = employee.getDepartments().stream()
+                .filter(dp -> dp.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
+        if (!deptEmp.getEmpDeptsId().getDepartmentNumber().equalsIgnoreCase(departmentNUmber)) {
             deptEmp.setToDate(LocalDate.now());
-            DeptEmp deptEmpNew=new DeptEmp(empNum, departmentNUmber, LocalDate.now(), END_VALID_DATE);
+            DeptEmp deptEmpNew = new DeptEmp(empNum, departmentNUmber, LocalDate.now(), END_VALID_DATE);
             this.deptEmpRepository.save(deptEmpNew);
         }
 
-        Integer salaryNum=employeeDto.salary();
-        Salary salary=employee.getSalaries().stream().filter(sal-> sal.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
-        if(salary.getSalary().intValue()!=salaryNum.intValue()){
+        Integer salaryNum = employeeDto.salary();
+        Salary salary = employee.getSalaries().stream().filter(sal -> sal.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
+        if (salary.getSalary().intValue() != salaryNum.intValue()) {
             salary.setToDate(LocalDate.now());
-            Salary newSalary=new Salary(empNum, salaryNum, LocalDate.now(), END_VALID_DATE);
+            Salary newSalary = new Salary(empNum, salaryNum, LocalDate.now(), END_VALID_DATE);
             this.salaryRepository.save(newSalary);
         }
 
-        String titleS=employeeDto.title();
-        Title title=employee.getTitles().stream().filter(tit-> tit.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
-        if(!title.getTitleId().getTitle().equalsIgnoreCase(titleS)){
+        String titleS = employeeDto.title();
+        Title title = employee.getTitles().stream().filter(tit -> tit.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
+        if (!title.getTitleId().getTitle().equalsIgnoreCase(titleS)) {
             title.setToDate(LocalDate.now());
-            Title newTitle=new Title(empNum, titleS, LocalDate.now(), END_VALID_DATE);
+            Title newTitle = new Title(empNum, titleS, LocalDate.now(), END_VALID_DATE);
             this.titleRepository.save(newTitle);
         }
 
@@ -123,7 +123,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeeRepository.deleteById(empNum);
     }
 
-    private void fillEmployee(final EmployeeDto employeeDto, final Employee employee){
+    private void fillEmployee(final EmployeeDto employeeDto, final Employee employee) {
         employee.setFirstName(employeeDto.firstName());
         employee.setLastName(employeeDto.lastName());
         employee.setGender(employeeDto.gender());

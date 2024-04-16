@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final JwtUtils jwtUtils;
 
-    public UserServiceImpl(final AuthenticationManager authenticationManager,final PasswordEncoder encoder,
-                           final UserRepository userRepository,final RoleRepository roleRepository,
+    public UserServiceImpl(final AuthenticationManager authenticationManager, final PasswordEncoder encoder,
+                           final UserRepository userRepository, final RoleRepository roleRepository,
                            final JwtUtils jwtUtils) {
 
         this.authenticationManager = authenticationManager;
@@ -48,17 +48,17 @@ public class UserServiceImpl implements UserService {
     @Transactional(TxType.REQUIRES_NEW)
     @Override
     public void registerUser(final SignUpDto signUpRequest) {
-        if(this.userRepository.existsByUsername(signUpRequest.username())){
+        if (this.userRepository.existsByUsername(signUpRequest.username())) {
             throw new RuntimeException("Error: Username is already taken!");
         }
-        if(this.userRepository.existsByEmail(signUpRequest.email())){
+        if (this.userRepository.existsByEmail(signUpRequest.email())) {
             throw new RuntimeException("Error: Email is already taken!");
         }
         final User user = new User(signUpRequest.username(),
                 signUpRequest.email(),
-               this.encoder.encode(signUpRequest.password()));
+                this.encoder.encode(signUpRequest.password()));
         String[] strRoles = signUpRequest.roles();
-        Set<Role> roles=buildRoles(strRoles);
+        Set<Role> roles = buildRoles(strRoles);
         user.setRoles(roles);
         this.userRepository.save(user);
     }
@@ -76,16 +76,16 @@ public class UserServiceImpl implements UserService {
         return new JjwtResponse(jwt, loginRequest.username(), userDetails.getEmail(), roles);
     }
 
-    private Set<Role> buildRoles(final String[] strRoles){
-        Set<Role> roles=new HashSet<>();
-        if(Objects.isNull(strRoles) || strRoles.length==0){
-         roles.add( this.roleRepository.findByDescription("USER").get());
+    private Set<Role> buildRoles(final String[] strRoles) {
+        Set<Role> roles = new HashSet<>();
+        if (Objects.isNull(strRoles) || strRoles.length == 0) {
+            roles.add(this.roleRepository.findByDescription("USER").get());
         }
-        final int len=strRoles.length;
+        final int len = strRoles.length;
         for (int i = 0; i < len; i++) {
-            roles.add( this.roleRepository.findByDescription(strRoles[i])
-                    .orElseThrow(()->new RuntimeException("Error, Role not found")));
+            roles.add(this.roleRepository.findByDescription(strRoles[i])
+                    .orElseThrow(() -> new RuntimeException("Error, Role not found")));
         }
         return roles;
     }
- }
+}

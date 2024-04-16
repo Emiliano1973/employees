@@ -12,5 +12,5 @@ public record EmployeeListItemDto(Long employeeNumber,
                                   LocalDate hireDate,
                                   String departmentName,
                                   String title
-                                  ) implements Serializable {
+) implements Serializable {
 }

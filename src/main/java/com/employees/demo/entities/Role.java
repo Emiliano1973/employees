@@ -11,8 +11,10 @@ import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-@Getter @Setter @NoArgsConstructor
-public class Role  implements Serializable {
+@Getter
+@Setter
+@NoArgsConstructor
+public class Role implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -23,7 +25,7 @@ public class Role  implements Serializable {
     private String description;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
-    private Set<User> users=new HashSet<>();
+    private Set<User> users = new HashSet<>();
 
     public Role(String description) {
         this.description = description;

@@ -26,10 +26,10 @@ public class JwtUtilsImpl implements JwtUtils {
     }
 
     @Override
-    public String generateJwtToken(final String username,final String[] roles) {
+    public String generateJwtToken(final String username, final String[] roles) {
         return Jwts.builder()
                 .subject(username)
-                .claims(Map.<String, String[]>of("roles", roles))
+                .claims(Map.of("roles", roles))
                 .issuedAt(new Date())
                 .expiration(getExpiresDate())
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -59,7 +59,7 @@ public class JwtUtilsImpl implements JwtUtils {
             return true;
         } catch (MalformedJwtException | ExpiredJwtException |
                  UnsupportedJwtException | IllegalArgumentException e) {
-            logger.error("Invalid JWT token: {"+e.getMessage()+"}");
+            logger.error("Invalid JWT token: {" + e.getMessage() + "}");
         }
         return false;
     }
@@ -68,7 +68,7 @@ public class JwtUtilsImpl implements JwtUtils {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.jwtSecret));
     }
 
-    private Date getExpiresDate(){
+    private Date getExpiresDate() {
         return Date.from(LocalDateTime
                 .now().plusMinutes(this.jwtExpirationMin)
                 .atZone(ZoneId.systemDefault()).toInstant());

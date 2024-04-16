@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found for username: " + username));
-        Collection<String> roles=user.getRoles().stream().map(Role::getDescription).toList();
+        Collection<String> roles = user.getRoles().stream().map(Role::getDescription).toList();
         return UserDetailsImpl.buildDetails(user.getUsername(), user.getEmail(), user.getPassword(), roles);
     }
 }

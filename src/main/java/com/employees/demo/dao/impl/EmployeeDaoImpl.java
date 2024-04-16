@@ -30,14 +30,13 @@ import java.util.Optional;
 @Repository
 public class EmployeeDaoImpl implements EmployeeDao {
 
+    private static final LocalDate DATE_FAKE_END = LocalDate.of(9999, 1, 1);
     @PersistenceContext
     private EntityManager em;
 
-    private static final LocalDate DATE_FAKE_END = LocalDate.of(9999, 1, 1);
-
-
     @Override
-    public PaginationDto findPages(final int page, final int pageSize, final String orderBy, final String orderByDir,
+    public PaginationDto findPages(final int page, final int pageSize, final String orderBy,
+                                   final String orderByDir,
                                    final Optional<String> searchBy) {
         final CriteriaBuilder cb = this.em.getCriteriaBuilder();
         int countEmp = countEmp(cb, searchBy);
@@ -59,7 +58,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 empDepartmentJoin.get(Department_.departmentName),
                 titleJoin.get(Title_.titleId).get(TitlePk_.title)
         );
-        setWhere(criteriaQuery, cb, employeeRoot, empJoin, empDepartmentJoin, titleJoin, searchBy);
+        setPagesWhere(criteriaQuery, cb, employeeRoot, empJoin, empDepartmentJoin, titleJoin, searchBy);
         setOrder(criteriaQuery, cb, employeeRoot, empDepartmentJoin, titleJoin, orderBy, orderByDir);
         TypedQuery<EmployeeListItemDto> query = this.em.createQuery(criteriaQuery);
         query.setMaxResults(pageSize);
@@ -115,17 +114,16 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
 
-    private int countEmp(final CriteriaBuilder cb, Optional<String> searchLike) {
+    private int countEmp(final CriteriaBuilder cb, final Optional<String> searchLike) {
         CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
         Root<Employee> employeeRoot = criteriaQuery.from(Employee.class);
         Join<Employee, DeptEmp> empJoin = employeeRoot.join(Employee_.departments, JoinType.INNER);
         Join<DeptEmp, Department> empDepartmentJoin = empJoin.join(DeptEmp_.department, JoinType.INNER);
         Join<Employee, Title> titleJoin = employeeRoot.join(Employee_.titles, JoinType.INNER);
         criteriaQuery.select(cb.count(employeeRoot.get(Employee_.employeeNumber)));
-        setWhere(criteriaQuery, cb, employeeRoot, empJoin, empDepartmentJoin, titleJoin, searchLike);
+        setPagesWhere(criteriaQuery, cb, employeeRoot, empJoin, empDepartmentJoin, titleJoin, searchLike);
         return this.em.createQuery(criteriaQuery).getSingleResult().intValue();
     }
-
 
 
     private void setOrder(final CriteriaQuery<EmployeeListItemDto> cq,
@@ -133,7 +131,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
                           final Join<DeptEmp, Department> empDepartmentJoin,
                           final Join<Employee, Title> titleJoin,
                           final String orderBy, final String orderDir) {
-
         switch (orderBy) {
             case Employee_.EMPLOYEE_NUMBER: {
                 if ("ASC".equalsIgnoreCase(orderDir)) {
@@ -183,15 +180,17 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
 
-    private void setWhere(final CriteriaQuery<?> cq,
-                          final CriteriaBuilder cb, final Root<Employee> employeeRoot,
-                          final Join<Employee, DeptEmp> empJoin,
-                          final Join<DeptEmp, Department> empDepartmentJoin,
-                          final Join<Employee, Title> titleJoin, final Optional<String> searchBy) {
+    private void setPagesWhere(final CriteriaQuery<?> cq,
+                               final CriteriaBuilder cb,
+                               final Root<Employee> employeeRoot,
+                               final Join<Employee, DeptEmp> empJoin,
+                               final Join<DeptEmp, Department> empDepartmentJoin,
+                               final Join<Employee, Title> titleJoin,
+                               final Optional<String> searchBy) {
         searchBy.ifPresentOrElse((searchByLikePresent) -> {
             Expression<String> convertDateInString = cb.function("DATE_FORMAT", String.class,
-                    employeeRoot.get(Employee_.hireDate), cb.literal("%d-%m-%Y"));
-            String searchLike = (new StringBuilder().append(searchByLikePresent).append("%").toString()).toUpperCase();
+                    employeeRoot.get(Employee_.hireDate), cb.literal("%d-%m-%Y%d-%m-%Y"));
+            String searchLike = (searchByLikePresent + "%").toUpperCase();
             Predicate orPred = cb.or(cb.like(employeeRoot.get(Employee_.employeeNumber).as(String.class), searchLike),
                     cb.like(cb.upper(employeeRoot.get(Employee_.firstName)), searchLike),
                     cb.like(cb.upper(employeeRoot.get(Employee_.lastName)), searchLike),
@@ -209,5 +208,4 @@ public class EmployeeDaoImpl implements EmployeeDao {
                     DATE_FAKE_END));
         });
     }
-
 }

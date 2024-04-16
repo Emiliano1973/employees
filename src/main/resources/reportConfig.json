@@ -1,0 +1,6 @@
+[{
+	"reportName": "departmentsWithParams", 
+	"reportTemplatePath": "/templates/",
+	"reportTemplateFileName": "Departments.jrxml",
+	"reportFileName": "department"
+}]

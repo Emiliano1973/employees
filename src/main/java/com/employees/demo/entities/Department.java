@@ -1,11 +1,6 @@
 package com.employees.demo.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +12,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "departments")
-@Setter @Getter @NoArgsConstructor
+@Setter
+@Getter
+@NoArgsConstructor
 public class Department implements Serializable {
 
     @Id
@@ -27,11 +24,11 @@ public class Department implements Serializable {
     @Column(name = "dept_name")
     private String departmentName;
 
-    @OneToMany( orphanRemoval = true, mappedBy = "department", fetch = FetchType.LAZY)
-    private Set<DeptEmp>  employees=new HashSet<>();
+    @OneToMany(orphanRemoval = true, mappedBy = "department", fetch = FetchType.LAZY)
+    private Set<DeptEmp> employees = new HashSet<>();
 
-    @OneToMany(  orphanRemoval = true, mappedBy = "department", fetch = FetchType.LAZY)
-    private Set<DeptManager> managers=new HashSet<>();
+    @OneToMany(orphanRemoval = true, mappedBy = "department", fetch = FetchType.LAZY)
+    private Set<DeptManager> managers = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

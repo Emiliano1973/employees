@@ -11,7 +11,9 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Embeddable
-@Getter @Setter @NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 public class EmpDeptsPk implements Serializable {
 
     @Column(name = "emp_no", nullable = false)
@@ -25,10 +27,10 @@ public class EmpDeptsPk implements Serializable {
     private LocalDate fromDate;
 
 
-    public EmpDeptsPk(final long employeeNumber,final String departmentNumber,final LocalDate fromDate) {
+    public EmpDeptsPk(final long employeeNumber, final String departmentNumber, final LocalDate fromDate) {
         this.employeeNumber = employeeNumber;
         this.departmentNumber = departmentNumber;
-        this.fromDate=fromDate;
+        this.fromDate = fromDate;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.employees.demo.utils;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+
 @Converter(autoApply = true)
 public class GenderConverter implements AttributeConverter<Gender, String> {
     @Override
