@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static jakarta.transaction.Transactional.*;
+
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 
@@ -21,14 +23,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    @Transactional(Transactional.TxType.NOT_SUPPORTED)
+    @Transactional(TxType.NOT_SUPPORTED)
     public ResponseDto getAllDepartments() {
         Collection<DropDownDto> dropDownDtos = this.departmentDao.getAllDepartments();
         return new ResponseDto(dropDownDtos.size(), dropDownDtos);
     }
 
     @Override
-    @Transactional(Transactional.TxType.NOT_SUPPORTED)
+    @Transactional(TxType.NOT_SUPPORTED)
     public ResponseDto getEmployeesDeptGroups() {
         Collection<Object[]> employeesPieTmp = this.departmentDao.getEmployeesDeptGroups();
         Collection<Object[]> employeesPie = new ArrayList<>(List.<Object[]>of(new String[]{"Departments", "Perc. of Employees"}));

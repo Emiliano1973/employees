@@ -7,6 +7,7 @@ import com.employees.demo.dao.repositories.SalaryRepository;
 import com.employees.demo.dao.repositories.TitleRepository;
 import com.employees.demo.dtos.EmployeeDto;
 import com.employees.demo.dtos.PaginationDto;
+import com.employees.demo.dtos.PaginationRequestDto;
 import com.employees.demo.entities.DeptEmp;
 import com.employees.demo.entities.Employee;
 import com.employees.demo.entities.Salary;
@@ -50,8 +51,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional(TxType.NOT_SUPPORTED)
-    public PaginationDto findByPage(int page, int pageSize, String orderBy, String orderByDir, Optional<String> searchLike) {
-        return this.employeeDao.findPages(page, pageSize, orderBy, orderByDir, searchLike);
+    public PaginationDto findByPage(final PaginationRequestDto request) {
+        return this.employeeDao.findPages(request);
     }
 
 

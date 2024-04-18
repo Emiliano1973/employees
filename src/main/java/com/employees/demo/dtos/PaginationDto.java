@@ -22,13 +22,11 @@ public record PaginationDto(int currentPage, int currentPageTotalElements, int t
 
     @Override
     public String toString() {
-        return "PaginationDto{" + "currentPage=" +
-                currentPage + ", currentPageTotalElements=" +
-                currentPageTotalElements + ", totalPages=" + totalPages +
-                ", pageSize=" + pageSize +
-                ", totalElements=" + totalElements +
-                ", elements=[" + elements.stream().map(Object::toString)
-                .collect(Collectors.joining(", ")) +
-                "]" + '}';
+        return new StringBuilder().append("PaginationDto{").append("currentPage=")
+                .append(currentPage).append(", currentPageTotalElements=").append(currentPageTotalElements)
+                .append(", totalPages=").append(totalPages).append(", pageSize=").append(pageSize)
+                .append(", totalElements=").append(totalElements)
+                .append(", elements=[").append(elements.stream().map(Object::toString)
+                .collect(Collectors.joining(", "))).append("]").append('}').toString();
     }
 }

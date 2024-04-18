@@ -1,10 +1,7 @@
 package com.employees.demo.EmployeeController;
 
 import com.employees.demo.controllers.EmployeeController;
-import com.employees.demo.dtos.EmployeeDto;
-import com.employees.demo.dtos.EmployeeListItemDto;
-import com.employees.demo.dtos.PaginationDto;
-import com.employees.demo.dtos.PaginatorDtoBuilder;
+import com.employees.demo.dtos.*;
 import com.employees.demo.services.EmployeeNotFoundException;
 import com.employees.demo.services.EmployeeService;
 import com.employees.demo.utils.Gender;
@@ -67,7 +64,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void shouldReturnFirstPageWhenEmPageCalled() throws Exception {
-        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, Optional.empty())).thenReturn(getPaginationDto());
+        when(this.employeeService.findByPage(new PaginationRequestDto(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, Optional.empty()))).thenReturn(getPaginationDto());
         mockMvc.perform(get("/api/services/employees/pages")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("page", String.valueOf(PAGE_NUMBER))
@@ -82,7 +79,8 @@ public class EmployeeControllerTest {
 
     @Test
     public void shouldReturnEmptyWhenEmPageCalled() throws Exception {
-        when(this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, Optional.empty())).thenReturn(getEmptyPaginationDto());
+        when(this.employeeService.findByPage(new PaginationRequestDto(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST,
+                ORDER_BY_DIR_TEST, Optional.empty()))).thenReturn(getEmptyPaginationDto());
         mockMvc.perform(get("/api/services/employees/pages")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("page", String.valueOf(PAGE_NUMBER))

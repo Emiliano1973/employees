@@ -6,10 +6,7 @@ import com.employees.demo.dao.repositories.DeptEmpRepository;
 import com.employees.demo.dao.repositories.EmployeeRepository;
 import com.employees.demo.dao.repositories.SalaryRepository;
 import com.employees.demo.dao.repositories.TitleRepository;
-import com.employees.demo.dtos.EmployeeDto;
-import com.employees.demo.dtos.EmployeeListItemDto;
-import com.employees.demo.dtos.PaginationDto;
-import com.employees.demo.dtos.PaginatorDtoBuilder;
+import com.employees.demo.dtos.*;
 import com.employees.demo.entities.DeptEmp;
 import com.employees.demo.entities.Employee;
 import com.employees.demo.entities.Salary;
@@ -89,8 +86,9 @@ public class EmployeeServiceImplTest {
     @Test
     public void whenBrowsePageThePageShouldReturn() throws Exception {
         Optional<String> empty = Optional.empty();
-        when(this.employeeDao.findPages(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty)).thenReturn(getPaginationDtoWithList());
-        PaginationDto paginationDto = this.employeeService.findByPage(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty);
+        PaginationRequestDto request=new PaginationRequestDto(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty);
+        when(this.employeeDao.findPages(request)).thenReturn(getPaginationDtoWithList());
+        PaginationDto paginationDto = this.employeeService.findByPage(request);
         assertNotNull(paginationDto);
         assertEquals(PAGE_NUMBER, paginationDto.currentPage());
         assertEquals(PAGE_SIZE, paginationDto.pageSize());

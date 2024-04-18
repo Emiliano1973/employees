@@ -2,6 +2,7 @@ package com.employees.demo.controllers;
 
 import com.employees.demo.dtos.EmployeeDto;
 import com.employees.demo.dtos.PaginationDto;
+import com.employees.demo.dtos.PaginationRequestDto;
 import com.employees.demo.services.EmployeeNotFoundException;
 import com.employees.demo.services.EmployeeService;
 import jakarta.validation.Valid;
@@ -37,11 +38,16 @@ public class EmployeeController {
 
     @GetMapping(value = "/pages", produces = MediaType.APPLICATION_JSON_VALUE)
     public PaginationDto getPage(@RequestParam("page") final int page,
-                                 @RequestParam("pageSize") final int pageSize, @RequestParam(value = "orderBy",
-            defaultValue = "employeeNumber") final String orderBy, @RequestParam(value = "orderByDir",
+                                 @RequestParam("pageSize") final int pageSize,
+                                 @RequestParam(value = "orderBy",
+            defaultValue = "employeeNumber") final String orderBy,
+                                 @RequestParam(value = "orderByDir",
             defaultValue = "ASC") final String orderByDir,
-                                 @RequestParam(value = "searchLike", required = false) final String searchLike) {
-        return this.employeeService.findByPage(page, pageSize, orderBy, orderByDir, Optional.ofNullable(searchLike));
+                                 @RequestParam(value = "searchLike",
+                                         required = false) final String searchLike) {
+        PaginationRequestDto request = new PaginationRequestDto(page, pageSize, orderBy,
+                orderByDir, Optional.ofNullable(searchLike));
+        return this.employeeService.findByPage(request);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -1,10 +1,7 @@
 package com.employees.demo.dao.impl;
 
 import com.employees.demo.dao.EmployeeDao;
-import com.employees.demo.dtos.EmployeeDto;
-import com.employees.demo.dtos.EmployeeListItemDto;
-import com.employees.demo.dtos.PaginationDto;
-import com.employees.demo.dtos.PaginatorDtoBuilder;
+import com.employees.demo.dtos.*;
 import com.employees.demo.entities.Department;
 import com.employees.demo.entities.Department_;
 import com.employees.demo.entities.DeptEmp;
@@ -35,9 +32,12 @@ public class EmployeeDaoImpl implements EmployeeDao {
     private EntityManager em;
 
     @Override
-    public PaginationDto findPages(final int page, final int pageSize, final String orderBy,
-                                   final String orderByDir,
-                                   final Optional<String> searchBy) {
+    public PaginationDto findPages(final PaginationRequestDto request) {
+        int page=request.page();
+        int pageSize= request.pageSize();
+        String orderBy=request.orderBy();
+        String orderByDir= request.orderByDir();
+        Optional<String> searchBy=request.searchLike();
         final CriteriaBuilder cb = this.em.getCriteriaBuilder();
         int countEmp = countEmp(cb, searchBy);
         if (countEmp == 0) {
@@ -176,7 +176,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 cq.orderBy(cb.asc(employeeRoot.get(Employee_.employeeNumber)));
             }
         }
-
     }
 
 
@@ -189,9 +188,10 @@ public class EmployeeDaoImpl implements EmployeeDao {
                                final Optional<String> searchBy) {
         searchBy.ifPresentOrElse((searchByLikePresent) -> {
             Expression<String> convertDateInString = cb.function("DATE_FORMAT", String.class,
-                    employeeRoot.get(Employee_.hireDate), cb.literal("%d-%m-%Y%d-%m-%Y"));
+                    employeeRoot.get(Employee_.hireDate), cb.literal("%d-%m-%Y"));
             String searchLike = (searchByLikePresent + "%").toUpperCase();
-            Predicate orPred = cb.or(cb.like(employeeRoot.get(Employee_.employeeNumber).as(String.class), searchLike),
+            Predicate orPred = cb
+                    .or(cb.like(employeeRoot.get(Employee_.employeeNumber).as(String.class), searchLike),
                     cb.like(cb.upper(employeeRoot.get(Employee_.firstName)), searchLike),
                     cb.like(cb.upper(employeeRoot.get(Employee_.lastName)), searchLike),
                     cb.like(convertDateInString, searchLike),

@@ -41,7 +41,8 @@ public class JasperDownloadManagerServiceImpl implements DownloadManagerService 
                             new IllegalArgumentException("Report not found for name :["+request.get(REPORT_NAME_KEY).toString()+"]"));
             connection.setAutoCommit(true);
             JasperPrint jasperPrint =(request.containsKey(REPORT_PARAMS_KEY))? JasperFillManager.fillReport(
-                    jasperReportConfigDto.jasperReport(), (Map<String, Object>)request.get(REPORT_PARAMS_KEY), connection): JasperFillManager.fillReport(
+                    jasperReportConfigDto.jasperReport(), (Map<String, Object>)request.get(REPORT_PARAMS_KEY), connection):
+                    JasperFillManager.fillReport(
                     jasperReportConfigDto.jasperReport(), null, connection);
             byte[] document = getReport(jasperPrint, contentType);
             jasperResponse = new DownloadResponse(jasperReportConfigDto.fileName(), contentType.getContentType(),
