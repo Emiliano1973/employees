@@ -10,7 +10,11 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +60,8 @@ public class DepartmentController {
                 .contentLength(downloadResponse.getResponseLength())
                 .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=" + downloadResponse.getFileName()+"." +contentType.getExtension()+ "")
+                        new StringBuilder().append("attachment; filename=")
+                                .append(contentType.createFilename(downloadResponse.getFileName())) .toString())
                 .contentType(downloadResponse.getContentType())
                 .body(new InputStreamResource(downloadResponse.getResponse()));
     }

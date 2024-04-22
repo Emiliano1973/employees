@@ -14,6 +14,8 @@ import com.employees.demo.services.impl.exporters.ReportHtmlExporterImpl;
 import com.employees.demo.services.impl.exporters.ReportPdfExporterImpl;
 import com.employees.demo.utils.ContentType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +29,7 @@ import java.util.Map;
 @Configuration
 public class JasperConfiguration {
 
+    private static final Log logger = LogFactory.getLog(JasperConfiguration.class);
 
     private final ObjectMapper objectMapper;
 
@@ -44,6 +47,7 @@ public class JasperConfiguration {
                     = new InputStreamReader( getClass().getResourceAsStream(this.configFile))) {
         reportConfigurations =this.objectMapper.readValue(theWorldStream, ReportConfigurationDto[].class);
         }catch (IOException e) {
+            logger.error("Error, it cannot possible to get Jasper file config : {}", e);
             throw new RuntimeException(e);
         }
         return new JasperResourceLocatorImpl(reportConfigurations);

@@ -1,9 +1,11 @@
 package com.employees.demo.utils;
 
-public class ReportParamNames {
+public final class ReportParamNames {
 
 
-    private ReportParamNames(){};
+    private ReportParamNames(){
+        throw new IllegalArgumentException("Error, object instancing is forbidden");
+    };
 
 
     public static final String REPORT_NAME_KEY ="reportName";

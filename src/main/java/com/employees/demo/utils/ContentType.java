@@ -27,6 +27,10 @@ public enum ContentType {
         return extension;
     }
 
+    public String createFilename(final String name){
+        String s = "%s.%s".formatted(name, extension);
+        return s;
+    }
 
     public static Optional<ContentType> getContentTypeByExtension(final  String extension){
        return Stream.of(values()).filter(ct->ct.getExtension().equalsIgnoreCase(extension)).findFirst();

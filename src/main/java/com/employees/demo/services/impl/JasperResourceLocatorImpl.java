@@ -6,6 +6,8 @@ import com.employees.demo.services.JasperResourceLocator;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
@@ -17,14 +19,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class JasperResourceLocatorImpl implements JasperResourceLocator {
-
+    private static final Log logger = LogFactory.getLog(JasperResourceLocatorImpl.class);
     private final Map<String, JasperReportConfigDto> jasperReportConfigMap;
 
     public JasperResourceLocatorImpl(ReportConfigurationDto[] jasperReportConfigArr) {
        this.jasperReportConfigMap= Stream.of(jasperReportConfigArr).map(rc->{
            ClassPathResource resource= new  ClassPathResource(rc.reportTemplatePath()+rc.reportTemplateFileName());
             if(!resource.exists()){
-                throw new RuntimeException("Error, resource ["+resource.getPath()+" not found");
+                logger.error("Error, resource Report ["+resource.getPath()+" not found");
+                throw new RuntimeException("Error, resource Report ["+resource.getPath()+" not found");
             }
             JasperReport jasperReport=null;
             try(InputStream theWorldStream

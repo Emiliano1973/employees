@@ -16,7 +16,13 @@ import com.employees.demo.entities.pk.TitlePk_;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -142,9 +148,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
             }
             case "name": {
                 if ("ASC".equalsIgnoreCase(orderDir)) {
-                    cq.orderBy(cb.asc(employeeRoot.get(Employee_.lastName)), cb.asc(employeeRoot.get(Employee_.firstName)));
+                    cq.orderBy(cb.asc(cb.upper(employeeRoot.get(Employee_.lastName))),
+                            cb.asc(cb.upper(employeeRoot.get(Employee_.firstName))));
                 } else {
-                    cq.orderBy(cb.desc(employeeRoot.get(Employee_.lastName)), cb.desc(employeeRoot.get(Employee_.firstName)));
+                    cq.orderBy(cb.desc(cb.upper(employeeRoot.get(Employee_.lastName))),
+                            cb.desc(cb.upper(employeeRoot.get(Employee_.firstName))));
                 }
                 break;
             }
@@ -166,9 +174,9 @@ public class EmployeeDaoImpl implements EmployeeDao {
             }
             case TitlePk_.TITLE: {
                 if ("ASC".equalsIgnoreCase(orderDir)) {
-                    cq.orderBy(cb.asc(titleJoin.get(Title_.titleId).get(TitlePk_.title)));
+                    cq.orderBy(cb.asc(cb.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title))));
                 } else {
-                    cq.orderBy(cb.desc(titleJoin.get(Title_.titleId).get(TitlePk_.title)));
+                    cq.orderBy(cb.desc(cb.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title))));
                 }
                 break;
             }
@@ -189,7 +197,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
         searchBy.ifPresentOrElse((searchByLikePresent) -> {
             Expression<String> convertDateInString = cb.function("DATE_FORMAT", String.class,
                     employeeRoot.get(Employee_.hireDate), cb.literal("%d-%m-%Y"));
-            String searchLike = (searchByLikePresent + "%").toUpperCase();
+            String searchLike = (new StringBuilder().append(searchByLikePresent).append("%").toString()).toUpperCase();
             Predicate orPred = cb
                     .or(cb.like(employeeRoot.get(Employee_.employeeNumber).as(String.class), searchLike),
                     cb.like(cb.upper(employeeRoot.get(Employee_.firstName)), searchLike),
@@ -201,7 +209,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
             cq.where(cb.and(cb.equal(titleJoin.get(Title_.toDate),
                     DATE_FAKE_END), cb.equal(empJoin.get(DeptEmp_.toDate),
                     DATE_FAKE_END), orPred));
-
         }, () -> {
             cq.where(cb.equal(titleJoin.get(Title_.toDate),
                     DATE_FAKE_END), cb.equal(empJoin.get(DeptEmp_.toDate),

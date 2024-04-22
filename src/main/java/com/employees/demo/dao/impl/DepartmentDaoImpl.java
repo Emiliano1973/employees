@@ -2,7 +2,12 @@ package com.employees.demo.dao.impl;
 
 import com.employees.demo.dao.DepartmentDao;
 import com.employees.demo.dtos.DropDownDto;
-import com.employees.demo.entities.*;
+import com.employees.demo.entities.Department;
+import com.employees.demo.entities.Department_;
+import com.employees.demo.entities.DeptEmp;
+import com.employees.demo.entities.DeptEmp_;
+import com.employees.demo.entities.Employee;
+import com.employees.demo.entities.Employee_;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;

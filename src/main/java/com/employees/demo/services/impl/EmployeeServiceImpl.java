@@ -88,30 +88,30 @@ public class EmployeeServiceImpl implements EmployeeService {
         fillEmployee(employeeDto, employee);
         this.employeeRepository.save(employee);
         String departmentNUmber = employeeDto.departmentNumber();
-        DeptEmp deptEmp = employee.getDepartments().stream()
-                .filter(dp -> dp.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
-        if (!deptEmp.getEmpDeptsId().getDepartmentNumber().equalsIgnoreCase(departmentNUmber)) {
-            deptEmp.setToDate(LocalDate.now());
-            DeptEmp deptEmpNew = new DeptEmp(empNum, departmentNUmber, LocalDate.now(), END_VALID_DATE);
-            this.deptEmpRepository.save(deptEmpNew);
-        }
-
+        employee.getDepartments().stream()
+                .filter(dp -> dp.getToDate().isEqual(END_VALID_DATE) &&
+                        !dp.getEmpDeptsId().getDepartmentNumber().equalsIgnoreCase(departmentNUmber))
+                .findFirst().ifPresent(deptEmp -> {
+                    deptEmp.setToDate(LocalDate.now());
+                    DeptEmp deptEmpNew = new DeptEmp(empNum, departmentNUmber, LocalDate.now(), END_VALID_DATE);
+                    this.deptEmpRepository.save(deptEmpNew);
+                });
         Integer salaryNum = employeeDto.salary();
-        Salary salary = employee.getSalaries().stream().filter(sal -> sal.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
-        if (salary.getSalary().intValue() != salaryNum.intValue()) {
-            salary.setToDate(LocalDate.now());
-            Salary newSalary = new Salary(empNum, salaryNum, LocalDate.now(), END_VALID_DATE);
-            this.salaryRepository.save(newSalary);
-        }
-
+        employee.getSalaries().stream()
+                .filter(sal -> sal.getToDate().isEqual(END_VALID_DATE)
+                        && (sal.getSalary().intValue() != salaryNum.intValue())).
+                findFirst().ifPresent(salary -> {
+                    salary.setToDate(LocalDate.now());
+                    Salary newSalary = new Salary(empNum, salaryNum, LocalDate.now(), END_VALID_DATE);
+                    this.salaryRepository.save(newSalary);
+                });
         String titleS = employeeDto.title();
-        Title title = employee.getTitles().stream().filter(tit -> tit.getToDate().isEqual(END_VALID_DATE)).findFirst().get();
-        if (!title.getTitleId().getTitle().equalsIgnoreCase(titleS)) {
+        employee.getTitles().stream().filter(tit -> tit.getToDate().isEqual(END_VALID_DATE)
+                && !tit.getTitleId().getTitle().equalsIgnoreCase(titleS)).findFirst().ifPresent(title -> {
             title.setToDate(LocalDate.now());
             Title newTitle = new Title(empNum, titleS, LocalDate.now(), END_VALID_DATE);
             this.titleRepository.save(newTitle);
-        }
-
+        });
     }
 
 
