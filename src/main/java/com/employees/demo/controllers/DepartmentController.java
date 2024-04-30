@@ -10,11 +10,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +22,7 @@ import static com.employees.demo.utils.ReportParamNames.*;
 @CacheConfig(cacheNames = "departments")
 public class DepartmentController {
 
-    private static final String REPORT_DEP_WITH_PARAM_NAME="departmentsWithParams";
+    private static final String REPORT_DEP_WITH_PARAM_NAME = "departmentsWithParams";
 
     private final DepartmentService departmentService;
 
@@ -34,7 +30,7 @@ public class DepartmentController {
 
 
     public DepartmentController(final DepartmentService departmentService,
-                               final DownloadManagerService jasperDownloadManagerService) {
+                                final DownloadManagerService jasperDownloadManagerService) {
         this.departmentService = departmentService;
         this.jasperDownloadManagerService = jasperDownloadManagerService;
     }
@@ -49,19 +45,19 @@ public class DepartmentController {
     @ResponseBody
     public ResponseEntity<InputStreamResource> getDepartmentReport(
             @PathVariable("deptNo") final String departmentNumber
-            ,@PathVariable("type") final ContentType contentType) {
-        Map<String, Object> params=new HashMap<>();
+            , @PathVariable("type") final ContentType contentType) {
+        Map<String, Object> params = new HashMap<>();
         params.put(REPORT_NAME_KEY, REPORT_DEP_WITH_PARAM_NAME);
-        Map<String, Object> internalParams=new HashMap<>();
-        internalParams.put(DEPT_NUM_KEY,departmentNumber);
-        params.put(REPORT_PARAMS_KEY,internalParams);
-        DownloadResponse downloadResponse=this.jasperDownloadManagerService.getDownloadResponse(params, contentType);
+        Map<String, Object> internalParams = new HashMap<>();
+        internalParams.put(DEPT_NUM_KEY, departmentNumber);
+        params.put(REPORT_PARAMS_KEY, internalParams);
+        DownloadResponse downloadResponse = this.jasperDownloadManagerService.getDownloadResponse(params, contentType);
         return ResponseEntity.ok()
                 .contentLength(downloadResponse.getResponseLength())
                 .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         new StringBuilder().append("attachment; filename=")
-                                .append(contentType.createFilename(downloadResponse.getFileName())) .toString())
+                                .append(contentType.createFilename(downloadResponse.getFileName())).toString())
                 .contentType(downloadResponse.getContentType())
                 .body(new InputStreamResource(downloadResponse.getResponse()));
     }

@@ -30,12 +30,13 @@ public class JasperResourceLocatorImpl implements JasperResourceLocator {
                 throw new RuntimeException("Error, resource Report ["+resource.getPath()+" not found");
             }
             JasperReport jasperReport=null;
-            try(InputStream theWorldStream
+            try(final InputStream theWorldStream
                         = resource.getInputStream();) {
                 jasperReport
                         = JasperCompileManager.compileReport(theWorldStream);
             } catch (JRException | IOException e) {
-                throw new RuntimeException(e);
+               logger.error("Error, report compilation error : "+e.getMessage(),e);
+                throw new RuntimeException("Error, report compilation error : "+e.getMessage(),e);
             }
             return new JasperReportConfigDto(rc.reportName(), rc.reportFileName(), jasperReport);
         }).collect(Collectors.toMap(JasperReportConfigDto::name, Function.identity()));

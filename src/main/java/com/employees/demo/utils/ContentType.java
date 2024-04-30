@@ -14,7 +14,7 @@ public enum ContentType {
     private final MediaType contentType;
     private final String extension;
 
-    ContentType(MediaType contentType, String extension) {
+    ContentType(final MediaType contentType,final String extension) {
         this.contentType = contentType;
         this.extension = extension;
     }
