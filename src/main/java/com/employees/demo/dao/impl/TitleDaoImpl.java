@@ -3,6 +3,7 @@ package com.employees.demo.dao.impl;
 import com.employees.demo.dao.TitleDao;
 import com.employees.demo.dtos.DropDownDto;
 import com.employees.demo.dtos.ResponseDto;
+import com.employees.demo.dtos.ResponseDtoBuilder;
 import com.employees.demo.entities.Title;
 import com.employees.demo.entities.Title_;
 import com.employees.demo.entities.pk.TitlePk_;
@@ -31,6 +32,7 @@ public class TitleDaoImpl implements TitleDao {
                 .orderBy(cb.asc(titleRoot.get(Title_.titleId).get(TitlePk_.title)));
         TypedQuery<DropDownDto> typedQuery=this.em.createQuery(criteriaQuery);
         Collection<DropDownDto> dropDownDtos=typedQuery.getResultList();
-        return new ResponseDto(dropDownDtos.size(), dropDownDtos);
+        return new ResponseDtoBuilder().setTotalElements(dropDownDtos.size())
+                .setElements(dropDownDtos).createResponseDto();
     }
 }

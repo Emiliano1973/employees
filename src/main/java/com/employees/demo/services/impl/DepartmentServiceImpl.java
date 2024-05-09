@@ -3,6 +3,7 @@ package com.employees.demo.services.impl;
 import com.employees.demo.dao.DepartmentDao;
 import com.employees.demo.dtos.DropDownDto;
 import com.employees.demo.dtos.ResponseDto;
+import com.employees.demo.dtos.ResponseDtoBuilder;
 import com.employees.demo.services.DepartmentService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional(TxType.NOT_SUPPORTED)
     public ResponseDto getAllDepartments() {
         Collection<DropDownDto> dropDownDtos = this.departmentDao.getAllDepartments();
-        return new ResponseDto(dropDownDtos.size(), dropDownDtos);
+        return new ResponseDtoBuilder().setTotalElements(dropDownDtos.size())
+                .setElements(dropDownDtos).createResponseDto();
     }
 
     @Override
@@ -35,6 +37,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         Collection<Object[]> employeesPieTmp = this.departmentDao.getEmployeesDeptGroups();
         Collection<Object[]> employeesPie = new ArrayList<>(List.<Object[]>of(new String[]{"Departments", "Perc. of Employees"}));
         employeesPie.addAll(employeesPieTmp);
-        return new ResponseDto(employeesPie.size(), employeesPie);
+        return new ResponseDtoBuilder().setTotalElements(employeesPie.size()).setElements(employeesPie).createResponseDto();
     }
 }
