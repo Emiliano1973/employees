@@ -59,7 +59,7 @@ public class DepartmentController {
                         new StringBuilder().append("attachment; filename=")
                                 .append(contentType.createFilename(downloadResponse.getFileName())).toString())
                 .contentType(downloadResponse.getContentType())
-                .body(new InputStreamResource(downloadResponse.getResponse()));
+                .body(new InputStreamResource(downloadResponse.getResponseStream()));
     }
 
     @GetMapping(value = "/pie", produces = MediaType.APPLICATION_JSON_VALUE)

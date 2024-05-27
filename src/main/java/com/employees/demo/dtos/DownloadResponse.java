@@ -32,7 +32,7 @@ public final class DownloadResponse {
     public int getResponseLength(){
         return this.responseLength;
     }
-    public InputStream getResponse() {
+    public InputStream getResponseStream() {
         return new ByteArrayInputStream(this.response, 0, this.responseLength);
     }
 }
