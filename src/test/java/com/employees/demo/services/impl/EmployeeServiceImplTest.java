@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith({SpringExtension.class}) // or @SpringBootTest
 @SpringBootTest
+@ActiveProfiles("test")
 public class EmployeeServiceImplTest {
     private static final Long EMP_NUMBER = Long.valueOf(1001);
     private static final Integer PAGE_NUMBER = Integer.valueOf(1);
@@ -86,7 +88,7 @@ public class EmployeeServiceImplTest {
     @Test
     public void whenBrowsePageThePageShouldReturn() throws Exception {
         Optional<String> empty = Optional.empty();
-        PaginationRequestDto request=new PaginationRequestDto(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty);
+        PaginationRequestDto request = new PaginationRequestDto(PAGE_NUMBER, PAGE_SIZE, ORDER_BY_TEST, ORDER_BY_DIR_TEST, empty);
         when(this.employeeDao.findPages(request)).thenReturn(getPaginationDtoWithList());
         PaginationDto paginationDto = this.employeeService.findByPage(request);
         assertNotNull(paginationDto);

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static jakarta.transaction.Transactional.*;
+import static jakarta.transaction.Transactional.TxType;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {

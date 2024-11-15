@@ -16,7 +16,6 @@ public class PaginatorDtoBuilder {
         return this;
     }
 
-
     public PaginatorDtoBuilder setCurrentPageTotalElements(int currentPageTotalElements) {
         this.currentPageTotalElements = currentPageTotalElements;
         return this;

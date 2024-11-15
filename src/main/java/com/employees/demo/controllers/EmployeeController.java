@@ -27,12 +27,12 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    @Cacheable(value = "employees", key = "#empNumber")
+    @Cacheable("employees")
     @GetMapping(value = "/{empNo}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getByEmpNo(@PathVariable("empNo") final Long empNumber) {
+    public EmployeeDto getByEmpNo(@PathVariable("empNo") final Long empNo) {
         EmployeeDto employeeDto = this.employeeService
-                .findByEmpNum(empNumber).orElseThrow(() -> new EmployeeNotFoundException(empNumber));
-        return ResponseEntity.ok(employeeDto);
+                .findByEmpNum(empNo).orElseThrow(() -> new EmployeeNotFoundException(empNo));
+        return employeeDto;
     }
 
     @GetMapping(value = "/pages", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -57,18 +57,18 @@ public class EmployeeController {
         return ResponseEntity.created(location).build();
     }
 
-    @CacheEvict(value = "employees", key = "#empNumber")
+    @CacheEvict(value = "employees", key = "#empNo")
     @PutMapping(value = "/{empNo}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateEmployee(@PathVariable("empNo") final Long empNumber,
+    public ResponseEntity<?> updateEmployee(@PathVariable("empNo") final Long empNo,
                                             @Valid @RequestBody final EmployeeDto employeeDto) {
-        this.employeeService.updateEmployee(empNumber, employeeDto);
+        this.employeeService.updateEmployee(empNo, employeeDto);
         return ResponseEntity.noContent().build();
     }
 
-    @CacheEvict(value = "employees", key = "#empNumber")
+    @CacheEvict(value = "employees", key = "#empNo")
     @DeleteMapping(value = "/{empNo}")
-    public ResponseEntity<?> deleteEmployee(@PathVariable("empNo") final Long empNumber) {
-        this.employeeService.deleteEmployee(empNumber);
+    public ResponseEntity<?> deleteEmployee(@PathVariable("empNo") final Long empNo) {
+        this.employeeService.deleteEmployee(empNo);
         return ResponseEntity.noContent().build();
     }
 

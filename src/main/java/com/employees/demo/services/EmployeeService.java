@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface EmployeeService {
 
 
-    PaginationDto findByPage( PaginationRequestDto request);
+    PaginationDto findByPage(PaginationRequestDto request);
 
     Optional<EmployeeDto> findByEmpNum(Long empNum);
 

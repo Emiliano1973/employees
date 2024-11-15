@@ -22,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith({SpringExtension.class}) // or @SpringBootTest
 @SpringBootTest
+@ActiveProfiles("test")
 public class UserServiceImplTest {
 
     private static final String TEST_USERNAME = "username";
@@ -103,7 +105,7 @@ public class UserServiceImplTest {
 
         this.userService.registerUser(signUpRequest);
 
-        verify(this.roleRepository).findByDescription("USER");
+        verify(this.roleRepository).findByDescriptionIn(new String[]{"USER"});
         verify(this.userRepository).save(any(User.class));
     }
 
@@ -121,27 +123,6 @@ public class UserServiceImplTest {
         verify(this.userRepository, never()).existsByEmail(TEST_EMAIL);
         verify(this.encoder, never()).encode(TEST_PASSWORD);
         verify(this.roleRepository, never()).findByDescription(any(String.class));
-        verify(this.userRepository, never()).save(any(User.class));
-    }
-
-
-    @Test
-    public void whenUserNotFoundInDbsAlreadyTakenThenItShouldThrowException() throws Exception {
-        buildSignUpDto();
-        when(this.userRepository.existsByEmail(TEST_EMAIL)).thenReturn(Boolean.FALSE);
-        when(this.userRepository.existsByUsername(TEST_USERNAME)).thenReturn(Boolean.FALSE);
-        when(this.encoder.encode(TEST_PASSWORD)).thenReturn(TEST_ENCODED_PASSWORD);
-        when(this.roleRepository.findByDescription(any(String.class))).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            this.userService.registerUser(this.signUpRequest);
-        });
-
-        assertEquals("Error, Role not found", exception.getMessage());
-        verify(this.userRepository).existsByUsername(TEST_USERNAME);
-        verify(this.userRepository).existsByEmail(TEST_EMAIL);
-        verify(this.encoder).encode(TEST_PASSWORD);
-        verify(this.roleRepository).findByDescription(any(String.class));
         verify(this.userRepository, never()).save(any(User.class));
     }
 

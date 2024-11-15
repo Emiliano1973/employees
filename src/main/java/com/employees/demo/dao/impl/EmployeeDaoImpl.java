@@ -2,27 +2,12 @@ package com.employees.demo.dao.impl;
 
 import com.employees.demo.dao.EmployeeDao;
 import com.employees.demo.dtos.*;
-import com.employees.demo.entities.Department;
-import com.employees.demo.entities.Department_;
-import com.employees.demo.entities.DeptEmp;
-import com.employees.demo.entities.DeptEmp_;
-import com.employees.demo.entities.Employee;
-import com.employees.demo.entities.Employee_;
-import com.employees.demo.entities.Salary;
-import com.employees.demo.entities.Salary_;
-import com.employees.demo.entities.Title;
-import com.employees.demo.entities.Title_;
+import com.employees.demo.entities.*;
 import com.employees.demo.entities.pk.TitlePk_;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -39,11 +24,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public PaginationDto findPages(final PaginationRequestDto request) {
-        int page=request.page();
-        int pageSize= request.pageSize();
-        String orderBy=request.orderBy();
-        String orderByDir= request.orderByDir();
-        Optional<String> searchBy=request.searchLike();
+        int page = request.page();
+        int pageSize = request.pageSize();
+        String orderBy = request.orderBy();
+        String orderByDir = request.orderByDir();
+        Optional<String> searchBy = request.searchLike();
         final CriteriaBuilder cb = this.em.getCriteriaBuilder();
         int countEmp = countEmp(cb, searchBy);
         if (countEmp == 0) {
@@ -200,12 +185,12 @@ public class EmployeeDaoImpl implements EmployeeDao {
             String searchLike = (new StringBuilder().append(searchByLikePresent).append("%").toString()).toUpperCase();
             Predicate orPred = cb
                     .or(cb.like(employeeRoot.get(Employee_.employeeNumber).as(String.class), searchLike),
-                    cb.like(cb.upper(employeeRoot.get(Employee_.firstName)), searchLike),
-                    cb.like(cb.upper(employeeRoot.get(Employee_.lastName)), searchLike),
-                    cb.like(convertDateInString, searchLike),
-                    cb.like(cb.upper(empDepartmentJoin.get(Department_.departmentName)), searchLike),
-                    cb.like(cb.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title)), searchLike)
-            );
+                            cb.like(cb.upper(employeeRoot.get(Employee_.firstName)), searchLike),
+                            cb.like(cb.upper(employeeRoot.get(Employee_.lastName)), searchLike),
+                            cb.like(convertDateInString, searchLike),
+                            cb.like(cb.upper(empDepartmentJoin.get(Department_.departmentName)), searchLike),
+                            cb.like(cb.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title)), searchLike)
+                    );
             cq.where(cb.and(cb.equal(titleJoin.get(Title_.toDate),
                     DATE_FAKE_END), cb.equal(empJoin.get(DeptEmp_.toDate),
                     DATE_FAKE_END), orPred));

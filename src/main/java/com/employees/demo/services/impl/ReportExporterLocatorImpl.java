@@ -12,13 +12,13 @@ public class ReportExporterLocatorImpl implements ReportExporterLocator {
     private final Map<ContentType, ReportExporter> reportExporterMap;
 
     public ReportExporterLocatorImpl(final Map<ContentType, ReportExporter> reportExporterMap
-                                     ) {
-        this.reportExporterMap= Map.copyOf(reportExporterMap);
+    ) {
+        this.reportExporterMap = Map.copyOf(reportExporterMap);
     }
 
     @Override
     public ReportExporter getReportExporter(final ContentType contentType) {
         Objects.requireNonNull(contentType, "Error, content type must not be null");
-        return  this.reportExporterMap.get(contentType);
+        return this.reportExporterMap.get(contentType);
     }
 }

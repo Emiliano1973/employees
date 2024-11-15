@@ -24,14 +24,14 @@ public class TitleDaoImpl implements TitleDao {
 
     @Override
     public ResponseDto getAllTitles() {
-        CriteriaBuilder cb=this.em.getCriteriaBuilder();
+        CriteriaBuilder cb = this.em.getCriteriaBuilder();
         CriteriaQuery<DropDownDto> criteriaQuery = cb.createQuery(DropDownDto.class);
         Root<Title> titleRoot = criteriaQuery.from(Title.class);
-        criteriaQuery.distinct(true).multiselect( titleRoot.get(Title_.titleId).get(TitlePk_.title),
+        criteriaQuery.distinct(true).multiselect(titleRoot.get(Title_.titleId).get(TitlePk_.title),
                         titleRoot.get(Title_.titleId).get(TitlePk_.title))
                 .orderBy(cb.asc(titleRoot.get(Title_.titleId).get(TitlePk_.title)));
-        TypedQuery<DropDownDto> typedQuery=this.em.createQuery(criteriaQuery);
-        Collection<DropDownDto> dropDownDtos=typedQuery.getResultList();
+        TypedQuery<DropDownDto> typedQuery = this.em.createQuery(criteriaQuery);
+        Collection<DropDownDto> dropDownDtos = typedQuery.getResultList();
         return new ResponseDtoBuilder().setTotalElements(dropDownDtos.size())
                 .setElements(dropDownDtos).createResponseDto();
     }

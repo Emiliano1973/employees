@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: demo
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+    cache:
+      type: redis
+      cache-names:
+        - employees
+        - titles
+        - departments
+      redis:
+        time-to-live: 3600000
+        cache-null-values: true
+
+employees:
+  app:
+    jwtSecret: Cj36HvAvdmQH0habD98X0Lz4AA76Hqhu9R7Uzj4831JNccd39uvVEFHMXPvn33G8KS2CGbvN59SZFNBywGr2BmFaaDi8zvdjCram
+    jwtExpirationMin: 120
+jasper:
+  config:
+    file: /reportConfig.json

@@ -7,7 +7,10 @@ import com.employees.demo.services.DepartmentService;
 import com.employees.demo.services.DownloadManagerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -21,7 +24,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = DepartmentController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+@WebMvcTest(controllers = DepartmentController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class,
+        DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@ImportAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+
 public class DepartmentControllerTest {
 
     private static final String CODE = "code";
@@ -36,7 +43,7 @@ public class DepartmentControllerTest {
 
 
     @Test
-    public void shouldReturnDepartmentsLis() throws Exception {
+    public void shouldReturnDepartmentsList() throws Exception {
         when(departmentService.getAllDepartments()).thenReturn(initDropDownDto());
         mockMvc.perform(get("/api/services/departments")
                         .contentType(MediaType.APPLICATION_JSON)

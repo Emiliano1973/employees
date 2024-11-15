@@ -79,12 +79,11 @@ public class UserServiceImpl implements UserService {
     private Set<Role> buildRoles(final String[] strRoles) {
         Set<Role> roles = new HashSet<>();
         if (Objects.isNull(strRoles) || strRoles.length == 0) {
-            roles.add(this.roleRepository.findByDescription("USER").get());
-        }
-        final int len = strRoles.length;
-        for (int i = 0; i < len; i++) {
-            roles.add(this.roleRepository.findByDescription(strRoles[i])
-                    .orElseThrow(() -> new RuntimeException("Error, Role not found")));
+            String[] rolesUser = new String[1];
+            rolesUser[0] = "USER";
+            roles.addAll(this.roleRepository.findByDescriptionIn(rolesUser));
+        } else {
+            roles.addAll(this.roleRepository.findByDescriptionIn(strRoles));
         }
         return roles;
     }

@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Collection;
 
-import static jakarta.transaction.Transactional.*;
+import static jakarta.transaction.Transactional.TxType;
 
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;

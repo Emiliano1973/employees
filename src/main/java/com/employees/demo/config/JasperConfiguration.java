@@ -36,22 +36,22 @@ public class JasperConfiguration {
 
     private final String configFile;
 
-    public JasperConfiguration(final ObjectMapper objectMapper, @Value("${jasper.config.file}")  final String configFile){
-        this.objectMapper=objectMapper;
-        this.configFile=configFile;
+    public JasperConfiguration(final ObjectMapper objectMapper, @Value("${jasper.config.file}") final String configFile) {
+        this.objectMapper = objectMapper;
+        this.configFile = configFile;
     }
 
     @Bean
-    JasperResourceLocator jasperResourceLocator(){
-        ClassPathResource resource= new  ClassPathResource(this.configFile);
-        if(!resource.exists()){
-            throw new RuntimeException("Error, jasper config file ["+this.configFile+"] not found");
+    JasperResourceLocator jasperResourceLocator() {
+        ClassPathResource resource = new ClassPathResource(this.configFile);
+        if (!resource.exists()) {
+            throw new RuntimeException("Error, jasper config file [" + this.configFile + "] not found");
         }
-        ReportConfigurationDto[]  reportConfigurations =null;
-        try(final Reader theWorldStream
-                    = new InputStreamReader( resource.getInputStream())) {
-        reportConfigurations =this.objectMapper.readValue(theWorldStream, ReportConfigurationDto[].class);
-        }catch (IOException e) {
+        ReportConfigurationDto[] reportConfigurations = null;
+        try (final Reader theWorldStream
+                     = new InputStreamReader(resource.getInputStream())) {
+            reportConfigurations = this.objectMapper.readValue(theWorldStream, ReportConfigurationDto[].class);
+        } catch (IOException e) {
             logger.error("Error, it cannot possible to get Jasper file config : {}", e);
             throw new RuntimeException("Error, it cannot possible to get Jasper file config : {}", e);
         }
@@ -60,37 +60,37 @@ public class JasperConfiguration {
 
 
     @Bean
-    DownloadManagerService jasperDownloadManagerService(DataSource dataSource){
-        return  new JasperDownloadManagerServiceImpl(dataSource,jasperResourceLocator(), reportExporterLocator());
+    DownloadManagerService jasperDownloadManagerService(final DataSource dataSource) {
+        return new JasperDownloadManagerServiceImpl(dataSource, jasperResourceLocator(), reportExporterLocator());
     }
 
     @Bean
-    ReportExporterLocator reportExporterLocator(){
-        Map<ContentType, ReportExporter> reportExporterMap=
+    ReportExporterLocator reportExporterLocator() {
+        Map<ContentType, ReportExporter> reportExporterMap =
                 Map.of(ContentType.EXCEL, reportExcelExporter(),
-                ContentType.EXCEL_OPEN_XML, reportExcelOpenXmlExporter(),
-                ContentType.HTML, reportHtmlExporter(),
-                ContentType.PDF, reportPdfExporter());
-        return  new ReportExporterLocatorImpl(reportExporterMap);
+                        ContentType.EXCEL_OPEN_XML, reportExcelOpenXmlExporter(),
+                        ContentType.HTML, reportHtmlExporter(),
+                        ContentType.PDF, reportPdfExporter());
+        return new ReportExporterLocatorImpl(reportExporterMap);
     }
 
-    @Bean( "reportExcelExporter")
-    ReportExporter reportExcelExporter(){
+    @Bean("reportExcelExporter")
+    ReportExporter reportExcelExporter() {
         return new ReportExcelExporterImpl();
     }
 
-    @Bean( "reportExcelOpenXmlExporter")
-    ReportExporter reportExcelOpenXmlExporter(){
+    @Bean("reportExcelOpenXmlExporter")
+    ReportExporter reportExcelOpenXmlExporter() {
         return new ReportExcelOpenXmlExporterImpl();
     }
 
-    @Bean( "reportHtmlExporter")
-    ReportExporter reportHtmlExporter(){
+    @Bean("reportHtmlExporter")
+    ReportExporter reportHtmlExporter() {
         return new ReportHtmlExporterImpl();
     }
 
-    @Bean( "reportPdfExporter")
-    ReportExporter reportPdfExporter(){
+    @Bean("reportPdfExporter")
+    ReportExporter reportPdfExporter() {
         return new ReportPdfExporterImpl();
     }
 

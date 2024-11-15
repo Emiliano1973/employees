@@ -30,7 +30,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true,
         jsr250Enabled = true, prePostEnabled = true) // by default
-///@Profile("!test")
 public class WebSecurityConfig {
 
     private final UserRepository userRepository;

@@ -35,26 +35,26 @@ public class JasperDownloadManagerServiceImpl implements DownloadManagerService 
     @Override
     public DownloadResponse getDownloadResponse(final Map<String, ?> request, final ContentType contentType) {
         DownloadResponse jasperResponse = null;
-        try (Connection connection = dataSource.getConnection()) {
-            JasperReportConfigDto jasperReportConfigDto=this.jasperResourceLocator
-                    .getJasperReportConfigByName(request.get(REPORT_NAME_KEY).toString()).orElseThrow(()->
-                            new IllegalArgumentException("Report not found for name :["+request.get(REPORT_NAME_KEY).toString()+"]"));
+        try (final Connection connection = dataSource.getConnection()) {
+            JasperReportConfigDto jasperReportConfigDto = this.jasperResourceLocator
+                    .getJasperReportConfigByName(request.get(REPORT_NAME_KEY).toString()).orElseThrow(() ->
+                            new IllegalArgumentException("Report not found for name :[" + request.get(REPORT_NAME_KEY).toString() + "]"));
             connection.setAutoCommit(true);
-            JasperPrint jasperPrint =(request.containsKey(REPORT_PARAMS_KEY))? JasperFillManager.fillReport(
-                    jasperReportConfigDto.jasperReport(), (Map<String, Object>)request.get(REPORT_PARAMS_KEY), connection):
+            JasperPrint jasperPrint = (request.containsKey(REPORT_PARAMS_KEY)) ? JasperFillManager.fillReport(
+                    jasperReportConfigDto.jasperReport(), (Map<String, Object>) request.get(REPORT_PARAMS_KEY), connection) :
                     JasperFillManager.fillReport(
-                    jasperReportConfigDto.jasperReport(), null, connection);
+                            jasperReportConfigDto.jasperReport(), null, connection);
             byte[] document = getReport(jasperPrint, contentType);
             jasperResponse = new DownloadResponse(jasperReportConfigDto.fileName(), contentType.getContentType(),
                     document);
         } catch (SQLException | JRException e) {
-            throw new RuntimeException("Error in report generation :"+e.getMessage(),e);
+            throw new RuntimeException("Error in report generation :" + e.getMessage(), e);
         }
         return jasperResponse;
     }
 
-    private byte[] getReport(final JasperPrint jasperPrint,final ContentType contentType)  {
-        ReportExporter reportExporter=this.reportExporterLocator.getReportExporter(contentType);
+    private byte[] getReport(final JasperPrint jasperPrint, final ContentType contentType) {
+        ReportExporter reportExporter = this.reportExporterLocator.getReportExporter(contentType);
         return reportExporter.exportReport(jasperPrint);
     }
 }

@@ -15,10 +15,11 @@ import java.io.IOException;
 
 public class ReportExcelOpenXmlExporterImpl implements ReportExporter {
     private static final Log logger = LogFactory.getLog(ReportExcelOpenXmlExporterImpl.class);
+
     @Override
     public byte[] exportReport(JasperPrint jasperPrint) {
         byte[] report = null;
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             JRXlsxExporter exporter = new JRXlsxExporter();
             exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
             SimpleXlsxReportConfiguration reportConfigXLS = new SimpleXlsxReportConfiguration();
@@ -28,8 +29,8 @@ public class ReportExcelOpenXmlExporterImpl implements ReportExporter {
             exporter.exportReport();
             report = outputStream.toByteArray();
         } catch (IOException | JRException e) {
-            logger.error("Error in export report :"+e.getMessage(), e);
-            throw new RuntimeException("Error in export report :"+e.getMessage(), e);
+            logger.error("Error in export report :" + e.getMessage(), e);
+            throw new RuntimeException("Error in export report :" + e.getMessage(), e);
         }
         return report;
     }

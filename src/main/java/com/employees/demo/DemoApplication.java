@@ -21,8 +21,11 @@ public class DemoApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
-                        .allowedOrigins("http://localhost:3000");
+                registry.addMapping("/**") // Permetti CORS per tutte le rotte
+                        .allowedOrigins("http://my-app.local") // Permetti solo le origini specificate
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS") // Permetti i metodi
+                        .allowedHeaders("Content-Type", "Authorization", "Accept", "Cache-Control", "Access-Control-Allow-Origin") // Specifica le intestazioni consentite
+                        .allowCredentials(true); // Se necessario
             }
         };
     }

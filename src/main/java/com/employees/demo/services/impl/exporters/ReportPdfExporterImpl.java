@@ -10,14 +10,15 @@ import org.apache.commons.logging.LogFactory;
 public class ReportPdfExporterImpl implements ReportExporter {
 
     private static final Log logger = LogFactory.getLog(ReportPdfExporterImpl.class);
+
     @Override
     public byte[] exportReport(JasperPrint jasperPrint) {
-        byte[] report=null;
+        byte[] report = null;
         try {
-          report= JasperExportManager.exportReportToPdf(jasperPrint);
+            report = JasperExportManager.exportReportToPdf(jasperPrint);
         } catch (JRException e) {
-            logger.error("Error in export report :"+e.getMessage(), e);
-            throw new RuntimeException("Error in export report :"+e.getMessage(), e);
+            logger.error("Error in export report :" + e.getMessage(), e);
+            throw new RuntimeException("Error in export report :" + e.getMessage(), e);
         }
         return report;
     }

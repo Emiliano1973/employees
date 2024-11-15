@@ -1,6 +1,7 @@
 package com.employees.demo.controllers;
 
 import com.employees.demo.dtos.DownloadResponse;
+import com.employees.demo.dtos.ResponseDto;
 import com.employees.demo.services.DepartmentService;
 import com.employees.demo.services.DownloadManagerService;
 import com.employees.demo.utils.ContentType;
@@ -37,27 +38,27 @@ public class DepartmentController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Cacheable(value = "departments", keyGenerator = "customKeyGenerator")
-    public ResponseEntity<?> getAllDepartments() {
-        return ResponseEntity.ok(this.departmentService.getAllDepartments());
+    public ResponseDto getAllDepartments() {
+        return this.departmentService.getAllDepartments();
     }
 
     @GetMapping(value = "/{deptNo}/report/{type}")
     @ResponseBody
     public ResponseEntity<InputStreamResource> getDepartmentReport(
-            @PathVariable("deptNo") final String departmentNumber
+            @PathVariable("deptNo") final String deptNo
             , @PathVariable("type") final ContentType contentType) {
         Map<String, Object> params = new HashMap<>();
         params.put(REPORT_NAME_KEY, REPORT_DEP_WITH_PARAM_NAME);
         Map<String, Object> internalParams = new HashMap<>();
-        internalParams.put(DEPT_NUM_KEY, departmentNumber);
+        internalParams.put(DEPT_NUM_KEY, deptNo);
         params.put(REPORT_PARAMS_KEY, internalParams);
         DownloadResponse downloadResponse = this.jasperDownloadManagerService.getDownloadResponse(params, contentType);
         return ResponseEntity.ok()
                 .contentLength(downloadResponse.getResponseLength())
                 .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        new StringBuilder().append("attachment; filename=")
-                                .append(contentType.createFilename(downloadResponse.getFileName())).toString())
+                        "attachment; filename=" +
+                                contentType.createFilename(downloadResponse.getFileName()))
                 .contentType(downloadResponse.getContentType())
                 .body(new InputStreamResource(downloadResponse.getResponseStream()));
     }

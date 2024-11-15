@@ -19,7 +19,7 @@ public class ReportHtmlExporterImpl implements ReportExporter {
     @Override
     public byte[] exportReport(JasperPrint jasperPrint) {
         byte[] report = null;
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             HtmlExporter exporter = new HtmlExporter();
             exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
             exporter.setConfiguration(new SimpleHtmlExporterConfiguration());
@@ -27,8 +27,8 @@ public class ReportHtmlExporterImpl implements ReportExporter {
             exporter.exportReport();
             report = outputStream.toByteArray();
         } catch (IOException | JRException e) {
-            logger.error("Error in export report :"+e.getMessage(), e);
-            throw new RuntimeException("Error in export report :"+e.getMessage(), e);
+            logger.error("Error in export report :" + e.getMessage(), e);
+            throw new RuntimeException("Error in export report :" + e.getMessage(), e);
         }
         return report;
     }

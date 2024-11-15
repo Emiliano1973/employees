@@ -7,5 +7,5 @@ import java.util.Map;
 
 public interface DownloadManagerService {
 
-    DownloadResponse getDownloadResponse(Map<String, ?> request,  ContentType contentType);
+    DownloadResponse getDownloadResponse(Map<String, ?> request, ContentType contentType);
 }

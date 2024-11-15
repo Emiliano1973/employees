@@ -18,11 +18,11 @@ public class ResponseDtoBuilder {
     }
 
     public ResponseDtoBuilder setElements(final Collection<?> elements) {
-        this.elements =new ArrayList<>( elements);
+        this.elements = new ArrayList<>(elements);
         return this;
     }
 
-    public ResponseDto createResponseDto(){
+    public ResponseDto createResponseDto() {
         return new ResponseDto(this.totalElements, this.elements);
     }
 

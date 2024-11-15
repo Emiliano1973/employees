@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface JasperResourceLocator {
 
 
-   Optional<JasperReportConfigDto> getJasperReportConfigByName(String name);
+    Optional<JasperReportConfigDto> getJasperReportConfigByName(String name);
 }

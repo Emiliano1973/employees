@@ -14,9 +14,13 @@ public enum ContentType {
     private final MediaType contentType;
     private final String extension;
 
-    ContentType(final MediaType contentType,final String extension) {
+    ContentType(final MediaType contentType, final String extension) {
         this.contentType = contentType;
         this.extension = extension;
+    }
+
+    public static Optional<ContentType> getContentTypeByExtension(final String extension) {
+        return Stream.of(values()).filter(ct -> ct.getExtension().equalsIgnoreCase(extension)).findFirst();
     }
 
     public MediaType getContentType() {
@@ -27,12 +31,7 @@ public enum ContentType {
         return extension;
     }
 
-    public String createFilename(final String name){
-        String s = "%s.%s".formatted(name, extension);
-        return s;
-    }
-
-    public static Optional<ContentType> getContentTypeByExtension(final  String extension){
-       return Stream.of(values()).filter(ct->ct.getExtension().equalsIgnoreCase(extension)).findFirst();
+    public String createFilename(final String name) {
+        return "%s.%s".formatted(name, extension);
     }
 }

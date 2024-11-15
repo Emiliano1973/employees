@@ -27,6 +27,6 @@ public record PaginationDto(int currentPage, int currentPageTotalElements, int t
                 .append(", totalPages=").append(totalPages).append(", pageSize=").append(pageSize)
                 .append(", totalElements=").append(totalElements)
                 .append(", elements=[").append(elements.stream().map(Object::toString)
-                .collect(Collectors.joining(", "))).append("]").append('}').toString();
+                        .collect(Collectors.joining(", "))).append("]").append('}').toString();
     }
 }
