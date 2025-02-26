@@ -9,6 +9,7 @@ import com.employees.demo.entities.Role;
 import com.employees.demo.entities.User;
 import com.employees.demo.security.JwtUtils;
 import com.employees.demo.security.impl.UserDetailsImpl;
+import com.employees.demo.services.UserAlreadyAddedException;
 import com.employees.demo.services.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +26,7 @@ import java.util.Set;
 
 import static jakarta.transaction.Transactional.TxType;
 
-@Service
+@Service("UserService")
 public class UserServiceImpl implements UserService {
 
     private final AuthenticationManager authenticationManager;
@@ -49,10 +50,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void registerUser(final SignUpDto signUpRequest) {
         if (this.userRepository.existsByUsername(signUpRequest.username())) {
-            throw new RuntimeException("Error: Username is already taken!");
+            throw new UserAlreadyAddedException("Error: Username is already taken!");
         }
         if (this.userRepository.existsByEmail(signUpRequest.email())) {
-            throw new RuntimeException("Error: Email is already taken!");
+            throw new UserAlreadyAddedException("Error: Email is already taken!");
         }
         final User user = new User(signUpRequest.username(),
                 signUpRequest.email(),

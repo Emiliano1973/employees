@@ -2,6 +2,7 @@ package com.employees.demo.dtos;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 public class PaginatorDtoBuilder {
     private int currentPage;
@@ -43,5 +44,10 @@ public class PaginatorDtoBuilder {
 
     public PaginationDto createPaginatorDto() {
         return new PaginationDto(currentPage, currentPageTotalElements, totalPages, pageSize, totalElements, elements);
+    }
+
+    public PaginationDto createEmptyPaginatorDto(){
+        return new PaginationDto(currentPage, 0, 0, pageSize, 0,
+                Collections.emptyList());
     }
 }

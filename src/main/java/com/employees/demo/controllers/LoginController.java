@@ -5,6 +5,8 @@ import com.employees.demo.dtos.LoginRequestDto;
 import com.employees.demo.dtos.SignUpDto;
 import com.employees.demo.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +21,7 @@ public class LoginController {
 
     private final UserService userService;
 
-    public LoginController(final UserService userService) {
+    public LoginController(@Qualifier("UserServiceRemote") final UserService userService) {
         this.userService = userService;
     }
 
@@ -34,6 +36,6 @@ public class LoginController {
         this.userService.registerUser(signUpRequest);
         Map<String, String> messages = new HashMap<>(1);
         messages.put("message", "User " + signUpRequest.username() + " is added");
-        return ResponseEntity.ok(messages);
+        return ResponseEntity.status(HttpStatus.CREATED).body(messages);
     }
 }

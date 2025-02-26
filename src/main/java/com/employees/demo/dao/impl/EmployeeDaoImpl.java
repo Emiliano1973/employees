@@ -11,7 +11,6 @@ import jakarta.persistence.criteria.*;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -24,19 +23,17 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public PaginationDto findPages(final PaginationRequestDto request) {
-        int page = request.page();
-        int pageSize = request.pageSize();
-        String orderBy = request.orderBy();
-        String orderByDir = request.orderByDir();
-        Optional<String> searchBy = request.searchLike();
-        final CriteriaBuilder cb = this.em.getCriteriaBuilder();
-        int countEmp = countEmp(cb, searchBy);
+        final int page = request.page();
+        final int pageSize = request.pageSize();
+        final String orderBy = request.orderBy();
+        final String orderByDir = request.orderByDir();
+        final Optional<String> searchBy = request.searchLike();
+        final CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
+        int countEmp = countEmp(criteriaBuilder, searchBy);
         if (countEmp == 0) {
-            return new PaginatorDtoBuilder().setCurrentPage(page).setCurrentPageTotalElements(0).setTotalPages(0).setPageSize(pageSize)
-                    .setTotalElements(0)
-                    .setElements(new ArrayList<>()).createPaginatorDto();
+            return new PaginatorDtoBuilder().setCurrentPage(page).setPageSize(pageSize).createEmptyPaginatorDto();
         }
-        CriteriaQuery<EmployeeListItemDto> criteriaQuery = cb.createQuery(EmployeeListItemDto.class);
+        CriteriaQuery<EmployeeListItemDto> criteriaQuery = criteriaBuilder.createQuery(EmployeeListItemDto.class);
         Root<Employee> employeeRoot = criteriaQuery.from(Employee.class);
         Join<Employee, DeptEmp> empJoin = employeeRoot.join(Employee_.departments, JoinType.INNER);
         Join<DeptEmp, Department> empDepartmentJoin = empJoin.join(DeptEmp_.department, JoinType.INNER);
@@ -49,8 +46,8 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 empDepartmentJoin.get(Department_.departmentName),
                 titleJoin.get(Title_.titleId).get(TitlePk_.title)
         );
-        setPagesWhere(criteriaQuery, cb, employeeRoot, empJoin, empDepartmentJoin, titleJoin, searchBy);
-        setOrder(criteriaQuery, cb, employeeRoot, empDepartmentJoin, titleJoin, orderBy, orderByDir);
+        setPagesWhere(criteriaQuery, criteriaBuilder, employeeRoot, empJoin, empDepartmentJoin, titleJoin, searchBy);
+        setOrder(criteriaQuery, criteriaBuilder, employeeRoot, empDepartmentJoin, titleJoin, orderBy, orderByDir);
         TypedQuery<EmployeeListItemDto> query = this.em.createQuery(criteriaQuery);
         query.setMaxResults(pageSize);
         query.setFirstResult((page - 1) * pageSize);
@@ -68,8 +65,8 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public Optional<EmployeeDto> findByEmpNumber(final Long empNumber) {
-        final CriteriaBuilder cb = this.em.getCriteriaBuilder();
-        CriteriaQuery<EmployeeDto> criteriaQuery = cb.createQuery(EmployeeDto.class);
+        final CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
+        CriteriaQuery<EmployeeDto> criteriaQuery = criteriaBuilder.createQuery(EmployeeDto.class);
         Root<Employee> employeeRoot = criteriaQuery.from(Employee.class);
         Join<Employee, DeptEmp> empJoin = employeeRoot.join(Employee_.departments, JoinType.INNER);
         Join<DeptEmp, Department> empDepartmentJoin = empJoin.join(DeptEmp_.department, JoinType.INNER);
@@ -85,11 +82,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 empDepartmentJoin.get(Department_.departmentNumber),
                 employeeSalaryJoin.get(Salary_.salary),
                 titleJoin.get(Title_.titleId).get(TitlePk_.title)
-        ).where(cb.equal(employeeSalaryJoin.get(Salary_.toDate),
+        ).where(criteriaBuilder.equal(employeeSalaryJoin.get(Salary_.toDate),
                         DATE_FAKE_END),
-                cb.equal(titleJoin.get(Title_.toDate),
-                        DATE_FAKE_END), cb.equal(empJoin.get(DeptEmp_.toDate), DATE_FAKE_END),
-                cb.equal(employeeRoot.get(Employee_.employeeNumber), empNumber));
+                criteriaBuilder.equal(titleJoin.get(Title_.toDate),
+                        DATE_FAKE_END), criteriaBuilder.equal(empJoin.get(DeptEmp_.toDate), DATE_FAKE_END),
+                criteriaBuilder.equal(employeeRoot.get(Employee_.employeeNumber), empNumber));
         TypedQuery<EmployeeDto> query = this.em.createQuery(criteriaQuery);
         return query.getResultStream().findFirst();
     }
@@ -97,106 +94,107 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public long findMaxEmployeeNumber() {
-        final CriteriaBuilder cb = this.em.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
+        final CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Employee> employeeRoot = criteriaQuery.from(Employee.class);
-        criteriaQuery.select(cb.max(employeeRoot.get(Employee_.employeeNumber)));
+        criteriaQuery.select(criteriaBuilder.max(employeeRoot.get(Employee_.employeeNumber)));
         return this.em.createQuery(criteriaQuery).getSingleResult().longValue();
     }
 
 
-    private int countEmp(final CriteriaBuilder cb, final Optional<String> searchLike) {
-        CriteriaQuery<Long> criteriaQuery = cb.createQuery(Long.class);
+    private int countEmp(final CriteriaBuilder criteriaBuilder, final Optional<String> searchLike) {
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<Employee> employeeRoot = criteriaQuery.from(Employee.class);
         Join<Employee, DeptEmp> empJoin = employeeRoot.join(Employee_.departments, JoinType.INNER);
         Join<DeptEmp, Department> empDepartmentJoin = empJoin.join(DeptEmp_.department, JoinType.INNER);
         Join<Employee, Title> titleJoin = employeeRoot.join(Employee_.titles, JoinType.INNER);
-        criteriaQuery.select(cb.count(employeeRoot.get(Employee_.employeeNumber)));
-        setPagesWhere(criteriaQuery, cb, employeeRoot, empJoin, empDepartmentJoin, titleJoin, searchLike);
+        criteriaQuery.select(criteriaBuilder.count(employeeRoot.get(Employee_.employeeNumber)));
+        setPagesWhere(criteriaQuery, criteriaBuilder, employeeRoot, empJoin, empDepartmentJoin, titleJoin, searchLike);
         return this.em.createQuery(criteriaQuery).getSingleResult().intValue();
     }
 
 
-    private void setOrder(final CriteriaQuery<EmployeeListItemDto> cq,
-                          final CriteriaBuilder cb, final Root<Employee> employeeRoot,
+    private void setOrder(final CriteriaQuery<EmployeeListItemDto> criteriaQuery,
+                          final CriteriaBuilder criteriaBuilder,
+                          final Root<Employee> employeeRoot,
                           final Join<DeptEmp, Department> empDepartmentJoin,
                           final Join<Employee, Title> titleJoin,
                           final String orderBy, final String orderDir) {
         switch (orderBy) {
             case Employee_.EMPLOYEE_NUMBER: {
                 if ("ASC".equalsIgnoreCase(orderDir)) {
-                    cq.orderBy(cb.asc(employeeRoot.get(Employee_.employeeNumber)));
+                    criteriaQuery.orderBy(criteriaBuilder.asc(employeeRoot.get(Employee_.employeeNumber)));
                 } else {
-                    cq.orderBy(cb.desc(employeeRoot.get(Employee_.employeeNumber)));
+                    criteriaQuery.orderBy(criteriaBuilder.desc(employeeRoot.get(Employee_.employeeNumber)));
                 }
                 break;
             }
             case "name": {
                 if ("ASC".equalsIgnoreCase(orderDir)) {
-                    cq.orderBy(cb.asc(cb.upper(employeeRoot.get(Employee_.lastName))),
-                            cb.asc(cb.upper(employeeRoot.get(Employee_.firstName))));
+                    criteriaQuery.orderBy(criteriaBuilder.asc(criteriaBuilder.upper(employeeRoot.get(Employee_.lastName))),
+                            criteriaBuilder.asc(criteriaBuilder.upper(employeeRoot.get(Employee_.firstName))));
                 } else {
-                    cq.orderBy(cb.desc(cb.upper(employeeRoot.get(Employee_.lastName))),
-                            cb.desc(cb.upper(employeeRoot.get(Employee_.firstName))));
+                    criteriaQuery.orderBy(criteriaBuilder.desc(criteriaBuilder.upper(employeeRoot.get(Employee_.lastName))),
+                            criteriaBuilder.desc(criteriaBuilder.upper(employeeRoot.get(Employee_.firstName))));
                 }
                 break;
             }
             case Employee_.HIRE_DATE: {
                 if ("ASC".equalsIgnoreCase(orderDir)) {
-                    cq.orderBy(cb.asc(employeeRoot.get(Employee_.hireDate)));
+                    criteriaQuery.orderBy(criteriaBuilder.asc(employeeRoot.get(Employee_.hireDate)));
                 } else {
-                    cq.orderBy(cb.desc(employeeRoot.get(Employee_.hireDate)));
+                    criteriaQuery.orderBy(criteriaBuilder.desc(employeeRoot.get(Employee_.hireDate)));
                 }
                 break;
             }
             case Department_.DEPARTMENT_NAME: {
                 if ("ASC".equalsIgnoreCase(orderDir)) {
-                    cq.orderBy(cb.asc(empDepartmentJoin.get(Department_.departmentNumber)));
+                    criteriaQuery.orderBy(criteriaBuilder.asc(empDepartmentJoin.get(Department_.departmentNumber)));
                 } else {
-                    cq.orderBy(cb.desc(empDepartmentJoin.get(Department_.departmentNumber)));
+                    criteriaQuery.orderBy(criteriaBuilder.desc(empDepartmentJoin.get(Department_.departmentNumber)));
                 }
                 break;
             }
             case TitlePk_.TITLE: {
                 if ("ASC".equalsIgnoreCase(orderDir)) {
-                    cq.orderBy(cb.asc(cb.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title))));
+                    criteriaQuery.orderBy(criteriaBuilder.asc(criteriaBuilder.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title))));
                 } else {
-                    cq.orderBy(cb.desc(cb.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title))));
+                    criteriaQuery.orderBy(criteriaBuilder.desc(criteriaBuilder.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title))));
                 }
                 break;
             }
             default: {
-                cq.orderBy(cb.asc(employeeRoot.get(Employee_.employeeNumber)));
+                criteriaQuery.orderBy(criteriaBuilder.asc(employeeRoot.get(Employee_.employeeNumber)));
             }
         }
     }
 
 
-    private void setPagesWhere(final CriteriaQuery<?> cq,
-                               final CriteriaBuilder cb,
+    private void setPagesWhere(final CriteriaQuery<?> criteriaQuery,
+                               final CriteriaBuilder criteriaBuilder,
                                final Root<Employee> employeeRoot,
                                final Join<Employee, DeptEmp> empJoin,
                                final Join<DeptEmp, Department> empDepartmentJoin,
                                final Join<Employee, Title> titleJoin,
                                final Optional<String> searchBy) {
         searchBy.ifPresentOrElse((searchByLikePresent) -> {
-            Expression<String> convertDateInString = cb.function("DATE_FORMAT", String.class,
-                    employeeRoot.get(Employee_.hireDate), cb.literal("%d-%m-%Y"));
+            Expression<String> convertDateInString = criteriaBuilder.function("DATE_FORMAT", String.class,
+                    employeeRoot.get(Employee_.hireDate), criteriaBuilder.literal("%d-%m-%Y"));
             String searchLike = (new StringBuilder().append(searchByLikePresent).append("%").toString()).toUpperCase();
-            Predicate orPred = cb
-                    .or(cb.like(employeeRoot.get(Employee_.employeeNumber).as(String.class), searchLike),
-                            cb.like(cb.upper(employeeRoot.get(Employee_.firstName)), searchLike),
-                            cb.like(cb.upper(employeeRoot.get(Employee_.lastName)), searchLike),
-                            cb.like(convertDateInString, searchLike),
-                            cb.like(cb.upper(empDepartmentJoin.get(Department_.departmentName)), searchLike),
-                            cb.like(cb.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title)), searchLike)
+            Predicate orPred = criteriaBuilder
+                    .or(criteriaBuilder.like(employeeRoot.get(Employee_.employeeNumber).as(String.class), searchLike),
+                            criteriaBuilder.like(criteriaBuilder.upper(employeeRoot.get(Employee_.firstName)), searchLike),
+                            criteriaBuilder.like(criteriaBuilder.upper(employeeRoot.get(Employee_.lastName)), searchLike),
+                            criteriaBuilder.like(convertDateInString, searchLike),
+                            criteriaBuilder.like(criteriaBuilder.upper(empDepartmentJoin.get(Department_.departmentName)), searchLike),
+                            criteriaBuilder.like(criteriaBuilder.upper(titleJoin.get(Title_.titleId).get(TitlePk_.title)), searchLike)
                     );
-            cq.where(cb.and(cb.equal(titleJoin.get(Title_.toDate),
-                    DATE_FAKE_END), cb.equal(empJoin.get(DeptEmp_.toDate),
+            criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(titleJoin.get(Title_.toDate),
+                    DATE_FAKE_END), criteriaBuilder.equal(empJoin.get(DeptEmp_.toDate),
                     DATE_FAKE_END), orPred));
         }, () -> {
-            cq.where(cb.equal(titleJoin.get(Title_.toDate),
-                    DATE_FAKE_END), cb.equal(empJoin.get(DeptEmp_.toDate),
+            criteriaQuery.where(criteriaBuilder.equal(titleJoin.get(Title_.toDate),
+                    DATE_FAKE_END), criteriaBuilder.equal(empJoin.get(DeptEmp_.toDate),
                     DATE_FAKE_END));
         });
     }

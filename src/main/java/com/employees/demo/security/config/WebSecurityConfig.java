@@ -1,10 +1,10 @@
 package com.employees.demo.security.config;
 
-import com.employees.demo.dao.repositories.UserRepository;
 import com.employees.demo.security.AuthTokenFilter;
 import com.employees.demo.security.JwtUtils;
 import com.employees.demo.security.impl.JwtUtilsImpl;
-import com.employees.demo.security.impl.UserDetailsServiceImpl;
+import com.employees.demo.security.impl.UserDetailsServiceRemoteImpl;
+import com.employees.demo.utils.ServiceLocator;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -32,16 +32,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
         jsr250Enabled = true, prePostEnabled = true) // by default
 public class WebSecurityConfig {
 
-    private final UserRepository userRepository;
+   // private final UserRepository userRepository;
+    private final ServiceLocator serviceLocator;
 
     private final String jwtSecret;
     private final int jwtExpirationMin;
 
-    public WebSecurityConfig(final UserRepository userRepository,
+    public WebSecurityConfig(//final UserRepository userRepository,
+                             final ServiceLocator serviceLocator,
                              @Value("${employees.app.jwtSecret}") final String jwtSecret,
                              @Value("${employees.app.jwtExpirationMin}") final int jwtExpirationMin
     ) {
-        this.userRepository = userRepository;
+        //this.userRepository = userRepository;
+        this.serviceLocator=serviceLocator;
         this.jwtSecret = jwtSecret;
         this.jwtExpirationMin = jwtExpirationMin;
     }
@@ -58,8 +61,10 @@ public class WebSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl(this.userRepository);
+        return new UserDetailsServiceRemoteImpl(serviceLocator);
     }
+
+
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

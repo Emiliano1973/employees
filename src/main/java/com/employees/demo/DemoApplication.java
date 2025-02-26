@@ -2,12 +2,14 @@ package com.employees.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
+@EnableDiscoveryClient
 @CrossOrigin(origins = "*")
 public class DemoApplication {
 
@@ -24,7 +26,7 @@ public class DemoApplication {
                 registry.addMapping("/**") // Permetti CORS per tutte le rotte
                         .allowedOrigins("http://my-app.local") // Permetti solo le origini specificate
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS") // Permetti i metodi
-                        .allowedHeaders("Content-Type", "Authorization", "Accept", "Cache-Control", "Access-Control-Allow-Origin") // Specifica le intestazioni consentite
+                        .allowedHeaders("*") // Specifica le intestazioni consentite
                         .allowCredentials(true); // Se necessario
             }
         };

@@ -21,26 +21,26 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
     @Override
     public Collection<DropDownDto> getAllDepartments() {
-        CriteriaBuilder cb = this.em.getCriteriaBuilder();
-        CriteriaQuery<DropDownDto> criteriaQuery = cb.createQuery(DropDownDto.class);
+        CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
+        CriteriaQuery<DropDownDto> criteriaQuery = criteriaBuilder.createQuery(DropDownDto.class);
         Root<Department> departmentRoot = criteriaQuery.from(Department.class);
         criteriaQuery
                 .multiselect(departmentRoot.get(Department_.departmentNumber),
                         departmentRoot.get(Department_.departmentName))
-                .orderBy(cb.asc(departmentRoot.get(Department_.departmentName)));
+                .orderBy(criteriaBuilder.asc(departmentRoot.get(Department_.departmentName)));
         return this.em.createQuery(criteriaQuery).getResultList();
     }
 
     @Override
     public Collection<Object[]> getEmployeesDeptGroups() {
-        CriteriaBuilder cb = this.em.getCriteriaBuilder();
-        CriteriaQuery<Object[]> criteriaQuery = cb.createQuery(Object[].class);
+        CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();
+        CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
         Root<Department> departmentRoot = criteriaQuery.from(Department.class);
         Join<Department, DeptEmp> departmentDeptEmpJoin = departmentRoot.join(Department_.employees, JoinType.INNER);
         Join<DeptEmp, Employee> deptEmpEmployeeJoin = departmentDeptEmpJoin.join(DeptEmp_.employee, JoinType.INNER);
         criteriaQuery.multiselect(departmentRoot.get(Department_.departmentName),
-                        cb.countDistinct(deptEmpEmployeeJoin.get(Employee_.employeeNumber)))
-                .where(cb.equal(departmentDeptEmpJoin.get(DeptEmp_.toDate), DATE_FAKE_END))
+                        criteriaBuilder.countDistinct(deptEmpEmployeeJoin.get(Employee_.employeeNumber)))
+                .where(criteriaBuilder.equal(departmentDeptEmpJoin.get(DeptEmp_.toDate), DATE_FAKE_END))
                 .groupBy(departmentRoot.get(Department_.departmentName));
         return this.em.createQuery(criteriaQuery).getResultList();
     }

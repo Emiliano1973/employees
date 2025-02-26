@@ -17,7 +17,7 @@ public class TitleController {
 
     private final TitleService titleService;
 
-    public TitleController(TitleService titleService) {
+    public TitleController(final TitleService titleService) {
         this.titleService = titleService;
     }
 

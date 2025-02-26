@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 public final class UserDetailsImpl implements UserDetails {
 
 
@@ -31,23 +33,22 @@ public final class UserDetailsImpl implements UserDetails {
         this.authorities = authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
-    public static UserDetailsImpl buildDetails(final String username,
+    public static UserDetailsImpl buildDetails( final String username,
                                                final String email, final String password,
                                                final Collection<String> authorities) {
-        Objects.requireNonNull(username, "username cannot be null");
-        Objects.requireNonNull(password, "password cannot be null");
-        Objects.requireNonNull(email, "email cannot be null");
-        Objects.requireNonNull(authorities, "authorities cannot be null");
-        if (username.trim().equals("")) {
-            throw new IllegalArgumentException("Username cannot be null");
-        }
-        if (password.trim().equals("")) {
-            throw new IllegalArgumentException("Password cannot be null");
-        }
-        if (email.trim().equals("")) {
-            throw new IllegalArgumentException("Email cannot be null");
+        validateString(username, "Username");
+        validateString(email, "Email");
+        validateString(password, "Password");
+        if (isEmpty(authorities)) {
+            throw new IllegalArgumentException("Authorities cannot be null or empty");
         }
         return new UserDetailsImpl(username, email, password, authorities);
+    }
+
+    private static void validateString(String value, String fieldName) {
+        if (Objects.isNull(value) || value.trim().equals("")) {
+            throw new IllegalArgumentException(fieldName + " cannot be null or empty");
+        }
     }
 
     @Override

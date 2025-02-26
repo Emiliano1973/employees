@@ -2,6 +2,7 @@ package com.employees.demo.controllers;
 
 import com.employees.demo.dtos.EmployeeDto;
 import com.employees.demo.dtos.PaginationRequestDto;
+import com.employees.demo.dtos.PaginationRequestDtoBuilder;
 import com.employees.demo.services.EmployeeNotFoundException;
 import com.employees.demo.services.EmployeeService;
 import jakarta.validation.Valid;
@@ -11,10 +12,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Optional;
+
+import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @RestController
 @RequestMapping("/api/services/employees")
@@ -29,10 +30,10 @@ public class EmployeeController {
 
     @Cacheable("employees")
     @GetMapping(value = "/{empNo}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EmployeeDto getByEmpNo(@PathVariable("empNo") final Long empNo) {
+    public ResponseEntity<?> getByEmpNo(@PathVariable("empNo") final Long empNo) {
         EmployeeDto employeeDto = this.employeeService
                 .findByEmpNum(empNo).orElseThrow(() -> new EmployeeNotFoundException(empNo));
-        return employeeDto;
+        return ResponseEntity.ok(employeeDto);
     }
 
     @GetMapping(value = "/pages", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,15 +45,16 @@ public class EmployeeController {
                                              defaultValue = "ASC") final String orderByDir,
                                      @RequestParam(value = "searchLike",
                                              required = false) final String searchLike) {
-        PaginationRequestDto request = new PaginationRequestDto(page, pageSize, orderBy,
-                orderByDir, Optional.ofNullable(searchLike));
+        PaginationRequestDto request = new PaginationRequestDtoBuilder()
+                .setPage(page).setPageSize(pageSize).setOrderBy(orderBy).
+                setOrderByDir(orderByDir).setSearchLike(searchLike).build();
         return ResponseEntity.ok(this.employeeService.findByPage(request));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> insertNewEmployee(@Valid @RequestBody final EmployeeDto employeeDto) {
         this.employeeService.insertNewEmployee(employeeDto);
-        URI location = ServletUriComponentsBuilder.fromUriString("/employees").build()
+        URI location = fromUriString("/employees").build()
                 .toUri();
         return ResponseEntity.created(location).build();
     }
